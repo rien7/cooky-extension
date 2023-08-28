@@ -1,10 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import './index.css'
+import styles from './index.css?inline'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = document.createElement('cooky-translator')
+const shadowRoot = root.attachShadow({ mode: 'open' })
+document.body.appendChild(root)
+ReactDOM.createRoot(shadowRoot).render(
   <React.StrictMode>
+    <style type="text/css">{styles.toString()}</style>
     <App />
   </React.StrictMode>,
 )
