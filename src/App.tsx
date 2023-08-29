@@ -1,5 +1,4 @@
 import useGetParagraph from './hooks/useGetParagraph'
-import './global.css'
 
 function App() {
   useGetParagraph()

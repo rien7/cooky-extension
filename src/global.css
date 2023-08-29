@@ -1,4 +1,29 @@
 .highlight {
-  background-color: #f7f7f7;
-  color: #333;
+  background-color: #fed7aa66;
+  position: relative;
+  color: #9ca3af;
 }
+
+cooky-selection {
+  color: green
+}
+
+/* .highlight::before,
+.highlight::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  background-color: #fed7aa66;
+}
+
+.highlight::before {
+  left: -10px;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.highlight::after {
+  right: -10px;
+  border-radius: 0 0.5rem 0.5rem 0;
+} */
