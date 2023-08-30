@@ -1,83 +1,9 @@
 import { useEffect, useState } from 'react'
 
-function mergeSelection(selections: { s: number; e: number }[]): { s: number; e: number }[] {
-  selections.sort((a, b) => a.s - b.s)
-  const merged: { s: number; e: number }[] = []
-  let last = selections[0]
-  for (let i = 1; i < selections.length; i++) {
-    if (selections[i].s <= last.e) {
-      last.e = Math.max(last.e, selections[i].e)
-    }
-    else {
-      merged.push(last)
-      last = selections[i]
-    }
-  }
-  merged.push(last)
-  return merged
-}
-
-// get children nodes offset from first character
-export function getOffsets(dom: HTMLElement | undefined) {
-  if (!dom)
-    return
-  const children = dom.childNodes
-  const offsets: Map<string | null, number> = new Map()
-  let count = 0
-  for (let i = 0; i < children.length; i++) {
-    // FIXME: use textContent as key may be duplicated
-    offsets.set(children[i].textContent, count)
-    count += children[i].textContent?.length || 0
-  }
-  return offsets
-}
-
 export default function useSelection(dom: HTMLElement | undefined) {
-  const [selections, setSelections] = useState<{ s: number; e: number }[]>([])
+  const [selections, setSelections] = useState<{ s: number; e: number; id: string }[]>([])
 
   function handleMouseUp() {
-    const selectionObj: Selection | null = (window.getSelection && window.getSelection())
-    if (!selectionObj)
-      return
-
-    const anchorNode = selectionObj.anchorNode
-    const focusNode = selectionObj.focusNode
-    if (!anchorNode || !focusNode)
-      return
-    const anchorOffset = selectionObj.anchorOffset
-    const focusOffset = selectionObj.focusOffset
-    const offsets = getOffsets(dom)
-    if (!offsets)
-      return
-
-    // if selections is collapsed(click selection), remove selection
-    if (selectionObj.isCollapsed) {
-      const offset = offsets.get(anchorNode.textContent) || 0
-      for (const item of selections) {
-        if (item.s <= anchorOffset + offset && anchorOffset + offset <= item.e) {
-          setSelections(selections.filter(i => i !== item))
-          return
-        }
-      }
-    }
-
-    const position = anchorNode.compareDocumentPosition(focusNode)
-    let forward = false
-    if (position === anchorNode.DOCUMENT_POSITION_FOLLOWING)
-      forward = true
-
-    else if (position === 0)
-      forward = anchorOffset < focusOffset
-
-    const anchorNodeOffset = offsets.get(anchorNode.textContent) || 0
-    const focusNodeOffset = offsets.get(focusNode.textContent) || 0
-    const start = forward ? anchorOffset + anchorNodeOffset : focusOffset + focusNodeOffset
-    const end = forward ? focusOffset + focusNodeOffset : anchorOffset + anchorNodeOffset
-
-    setSelections(mergeSelection([...selections, { s: start, e: end }]))
-  }
-
-  function handleMouseUp2() {
     const selectionObj: Selection | null = (window.getSelection && window.getSelection())
     if (!selectionObj)
       return
@@ -93,6 +19,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
         siblingNodes.push(currentNode as HTMLElement)
         currentNode = treeWalker.nextNode()
       }
+      const randomId = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase()
       let started = false
       for (const node of siblingNodes) {
         if (!started && node !== range.startContainer) {
@@ -109,6 +36,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
             if (text) {
               const selection = document.createElement('cooky-selection')
               selection.textContent = text
+              selection.id = randomId
               node.replaceWith(leadingText, selection, trailingText)
             }
             break
@@ -118,6 +46,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
             if (text) {
               const selection = document.createElement('cooky-selection')
               selection.textContent = text
+              selection.id = randomId
               node.replaceWith(leadingText, selection)
             }
           }
@@ -127,6 +56,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
           if (text) {
             const selection = document.createElement('cooky-selection')
             selection.textContent = text
+            selection.id = randomId
             node.replaceWith(selection)
           }
         }
@@ -137,6 +67,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
           if (text) {
             const selection = document.createElement('cooky-selection')
             selection.textContent = text
+            selection.id = randomId
             node.replaceWith(selection, trailingText)
           }
           break
@@ -144,12 +75,40 @@ export default function useSelection(dom: HTMLElement | undefined) {
       }
       selectionObj.empty()
     }
+    if (!dom)
+      return
+    const countTreeWalker = document.createTreeWalker(dom)
+    let _countNode = countTreeWalker.nextNode()
+    let lastId = ''
+    let count = 0
+    const selections: { s: number; e: number; id: string }[] = []
+    while (_countNode) {
+      const countNode = _countNode as HTMLElement
+      if (countNode.childNodes.length === 0) {
+        count += countNode.textContent?.length || 0
+      }
+      else if (countNode.nodeName === 'COOKY-SELECTION') {
+        if (countNode.id !== lastId) {
+          selections.push({ s: count, e: count + (countNode.textContent?.length || 0), id: countNode.id })
+          lastId = countNode.id
+        }
+        else {
+          let index = selections.length - 1
+          if (selections[index].id !== countNode.id)
+            index = selections.findIndex(selection => selection.id === countNode.id)
+          selections[index].e = count + (countNode.textContent?.length || 0)
+        }
+      }
+      _countNode = countTreeWalker.nextNode()
+    }
+
+    setSelections(selections)
   }
 
   useEffect(() => {
-    dom?.addEventListener('mouseup', handleMouseUp2)
+    dom?.addEventListener('mouseup', handleMouseUp)
     return () => {
-      dom?.removeEventListener('mouseup', handleMouseUp2)
+      dom?.removeEventListener('mouseup', handleMouseUp)
     }
   }, [dom])
 
