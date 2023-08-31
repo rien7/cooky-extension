@@ -10,3 +10,16 @@ cooky-translator {
   isolation: isolate;
   z-index: 99
 }
+
+.absolute {
+  position: absolute;
+  transition: all .3s ease-in-out;
+}
+
+.float-dot {
+  @apply h-2 w-2 rounded-full bg-gray-300 outline-gray-300 transition-all cursor-pointer;
+}
+
+.float-dot:hover {
+  @apply outline outline-2 outline-offset-2;
+}

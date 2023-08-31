@@ -9,6 +9,28 @@ export default function useSelection(dom: HTMLElement | undefined) {
     const selectionObj: Selection | null = (window.getSelection && window.getSelection())
     if (!selectionObj)
       return
+    if (selectionObj.isCollapsed) {
+      // get first cooky-selection parent
+      let node = selectionObj.anchorNode
+      while (node && node.parentElement) {
+        if (node.parentElement.nodeName === 'COOKY-SELECTION') {
+          node = node.parentElement
+          break
+        }
+        node = node.parentElement
+      }
+      const id = (node as HTMLElement)?.id
+      if (id.length !== 22)
+        return
+      const rawId = id.slice(16)
+      if (rawId)
+        setSelections(selections => selections.filter(selection => selection.id !== rawId))
+      const selectedElement = dom.querySelectorAll(`#${id}`)
+      selectedElement.forEach((element) => {
+        element.outerHTML = element.textContent || ''
+      })
+      return
+    }
     const selectedText = selectionObj.toString()
     if (selectedText !== '') {
       const selectionElement = document.createElement('cooky-selection')
@@ -38,7 +60,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
             if (text) {
               const selection = document.createElement('cooky-selection')
               selection.textContent = text
-              selection.id = randomId
+              selection.id = `cooky-selection-${randomId}`
               node.replaceWith(leadingText, selection, trailingText)
             }
             break
@@ -48,7 +70,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
             if (text) {
               const selection = document.createElement('cooky-selection')
               selection.textContent = text
-              selection.id = randomId
+              selection.id = `cooky-selection-${randomId}`
               node.replaceWith(leadingText, selection)
             }
           }
@@ -58,7 +80,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
           if (text) {
             const selection = document.createElement('cooky-selection')
             selection.textContent = text
-            selection.id = randomId
+            selection.id = `cooky-selection-${randomId}`
             node.replaceWith(selection)
           }
         }
@@ -69,7 +91,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
           if (text) {
             const selection = document.createElement('cooky-selection')
             selection.textContent = text
-            selection.id = randomId
+            selection.id = `cooky-selection-${randomId}`
             node.replaceWith(selection, trailingText)
           }
           break
