@@ -4,6 +4,8 @@ export default function useSelection(dom: HTMLElement | undefined) {
   const [selections, setSelections] = useState<{ s: number; e: number; id: string }[]>([])
 
   function handleMouseUp() {
+    if (!dom)
+      return
     const selectionObj: Selection | null = (window.getSelection && window.getSelection())
     if (!selectionObj)
       return
@@ -75,8 +77,6 @@ export default function useSelection(dom: HTMLElement | undefined) {
       }
       selectionObj.empty()
     }
-    if (!dom)
-      return
     const countTreeWalker = document.createTreeWalker(dom)
     let _countNode = countTreeWalker.nextNode()
     let lastId = ''

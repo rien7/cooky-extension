@@ -5,6 +5,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:tailwindcss/recommended',
     '@antfu/eslint-config',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs', '*.json'],

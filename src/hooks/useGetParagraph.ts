@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import useMouse from './useMouse'
 import useKeyPress from './useKeyPress'
 import useSelection from './useSelection'
@@ -6,7 +6,6 @@ import useSelection from './useSelection'
 export default function useGetParagraph() {
   const excludeTagName = ['', 'DIV', 'HTML', 'BODY']
   const includeTagName = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI']
-  const [highlightElement, setHighlightElement] = useState<HTMLElement | undefined>(undefined)
   const elementRef = useRef<HTMLElement | undefined>(undefined)
   const position = useMouse()
   const keyPress = useKeyPress('MetaLeft')
@@ -30,7 +29,6 @@ export default function useGetParagraph() {
         const highlightElements = document.querySelectorAll('.highlight')
         highlightElements.forEach(element => element.classList.remove('highlight'))
         element?.classList.add('highlight')
-        setHighlightElement(element as HTMLElement)
         elementRef.current = element
       }
     }
@@ -38,9 +36,6 @@ export default function useGetParagraph() {
       const highlightElements = document.querySelectorAll('.highlight')
       highlightElements.forEach(element => element.classList.remove('highlight'))
       elementRef.current = undefined
-      setHighlightElement(undefined)
     }
   }, [position, keyPress])
-
-  return highlightElement
 }
