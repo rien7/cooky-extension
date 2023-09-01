@@ -1,7 +1,7 @@
-export default function FloatDot(props: { setFloatDotClick: (value: boolean) => void }) {
+export default function FloatDot(props: { handleClick: () => void }) {
   return (
     <>
-      <div className='float-dot' onClick={() => props.setFloatDotClick(true)} />
+      <div className='float-dot' onClick={props.handleClick} />
     </>
   )
 }

@@ -10,7 +10,6 @@ export default function useSelection(dom: HTMLElement | undefined) {
     if (!selectionObj)
       return
     if (selectionObj.isCollapsed) {
-      // get first cooky-selection parent
       let node = selectionObj.anchorNode
       while (node && node.parentElement) {
         if (node.parentElement.nodeName === 'COOKY-SELECTION') {
@@ -125,9 +124,12 @@ export default function useSelection(dom: HTMLElement | undefined) {
     }
 
     setSelections(selections)
+    if (!dom.classList.contains('cooky-selection-paragraph'))
+      dom.classList.add('cooky-selection-paragraph')
   }
 
   useEffect(() => {
+    setSelections([])
     dom?.addEventListener('mouseup', handleMouseUp)
     return () => {
       dom?.removeEventListener('mouseup', handleMouseUp)

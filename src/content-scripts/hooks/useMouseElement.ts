@@ -5,7 +5,7 @@ export default function useMouseElement(fixed: boolean = false) {
   const [element, setElement] = useState<Element | undefined>(undefined)
   const position = useMouse()
   const excludeTagName = ['', 'DIV', 'HTML', 'BODY']
-  const includeTagName = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT']
+  const includeTagName = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT', 'SECTION']
 
   useEffect(() => {
     if (fixed)
@@ -21,7 +21,7 @@ export default function useMouseElement(fixed: boolean = false) {
       else
         break
     }
-    if (!element || element == null || excludeTagName.includes(element.tagName || '')) {
+    if (!element || element == null || excludeTagName.includes(element.tagName || '') || element.textContent?.trim() === '') {
       // setElement(undefined)
       return
     }

@@ -4,9 +4,39 @@
   color: #9ca3af;
 }
 
+.highlight::selection, .cooky-selection-paragraph::selection {
+  background-color: #fb923c4d;
+  color: #fb923c;
+}
+
+@property --percentage {
+  syntax: '<percentage>';
+  initial-value: 10%;
+  inherits: false;
+}
+
 cooky-selection {
-  background-color: #fb923c88;
+  background: linear-gradient(0deg, rgba(251,146,60,1) 0%, rgba(251,146,60,1) var(--percentage), rgba(251,146,60,0.3) var(--percentage), rgba(251,146,60,0.3) 100%);
   cursor: pointer;
+  transition: --percentage 0.3s ease-in-out;
+}
+
+cooky-selection:hover {
+  --percentage: 20%
+}
+
+cooky-selection[id^='cooky-selection-']::after {
+  content: attr(data);
+  display: inline-block;
+  font-size: 0.75rem;
+}
+
+.cooky-selection-paragraph::after {
+  content: attr(data);
+  display: block;
+  font-size: 1rem;
+  border-left: 0.25rem solid #fb923c;
+  padding-left: 0.5rem;
 }
 
 /* .highlight::before,
