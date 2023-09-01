@@ -1,33 +1,44 @@
 import { useEffect, useRef, useState } from 'react'
-import FloatDot from './content-scripts/components/floatDot'
-import useFloatDotPosition from './content-scripts/hooks/useFloatDotPosition'
+import useElementBounding from './content-scripts/hooks/useElementBounding'
 import useMouseElement from './content-scripts/hooks/useMouseElement'
 import useSelection from './content-scripts/hooks/useSelection'
 import { OpenAi } from './utils/openai'
+import useKeyPress from './content-scripts/hooks/useKeyPress'
 
 function App() {
-  const [floatDotClick, setFloatDotClick] = useState(false)
-  const floatDotPositoin = useFloatDotPosition(floatDotClick)
-  const element = useMouseElement(floatDotClick)
-
+  const [fixed, setFixed] = useState(false)
+  const [showBlock, setShowBlock] = useState(false)
+  // const floatDotPositoin = useFloatDotPosition(fixed)
+  const element = useMouseElement(fixed)
+  const keyPress = useKeyPress('MetaLeft')
+  const bounding = useElementBounding(fixed)
   const elementRef = useRef<HTMLElement | undefined>(undefined)
   const selection = useSelection(elementRef.current)
 
+  // useEffect(() => {
+  //   if (keyPress && !fixed) {
+  //     const randomId = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase()
+  //     if (!element.classList.contains('cooky-selection-paragraph')) {
+  //       element.classList.add('cooky-selection-paragraph')
+  //       element.classList.add(`paragraph-${randomId}`)
+  //     }
+  //     elementRef.current = element as HTMLElement
+  //   }
+  //   else { elementRef.current = undefined }
+  // }, [keyPress, fixed])
+
   useEffect(() => {
-    if (element && floatDotClick) {
-      const randomId = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase()
-      if (!element.classList.contains('cooky-selection-paragraph')) {
-        element.classList.add('cooky-selection-paragraph')
-        element.classList.add(`paragraph-${randomId}`)
-      }
-      elementRef.current = element as HTMLElement
-    }
-    else { elementRef.current = undefined }
-  }, [element, floatDotClick])
+    if (keyPress && !fixed)
+      setShowBlock(true)
+    else if (fixed)
+      setShowBlock(true)
+    else
+      setShowBlock(false)
+  }, [keyPress, fixed, element])
 
   async function handleClick() {
-    if (!floatDotClick) {
-      setFloatDotClick(true)
+    if (!fixed) {
+      setFixed(true)
     }
     else {
       let buffer = ''
@@ -70,7 +81,10 @@ function App() {
               }
             }
           }
-          setFloatDotClick(false)
+          setFixed(false)
+          if (element?.classList.contains('cooky-selecting-paragraph'))
+            element?.classList.remove('cooky-selecting-paragraph')
+          elementRef.current = undefined
         }
       }
     }
@@ -78,8 +92,36 @@ function App() {
 
   return (
     <>
-      {floatDotPositoin && <div className="absolute" style={{ left: floatDotPositoin.x - 10, top: floatDotPositoin.y - 10 }}>
-        <FloatDot handleClick={handleClick} />
+      {showBlock && bounding && <div className={`element-bounding ${fixed ? 'fixed' : ''} ${element?.classList.contains('cooky-selection-paragraph') ? 'block' : ''}`}
+      style={{ left: bounding.rect.left + scrollX - 33, top: bounding.rect.top + window.scrollY - 10, width: bounding.rect.width + 46, height: bounding.rect.height + 20 }}
+      onClick={() => {
+        const classList = element?.classList
+        if (classList?.contains('cooky-selection-paragraph'))
+          return
+        setFixed(true)
+        if (!classList?.contains('cooky-selecting-paragraph'))
+          element?.classList.add('cooky-selecting-paragraph')
+        elementRef.current = element as HTMLElement
+      }}>
+        <div className='float-block' />
+        <div className='comfirm' onClick={(e) => {
+          e.stopPropagation()
+          if (!element?.classList.contains('cooky-selection-paragraph'))
+            element?.classList.add('cooky-selection-paragraph')
+          setShowBlock(false)
+          handleClick()
+        }}/>
+        <div className='cancle' onClick={(e) => {
+          e.stopPropagation()
+          if (element?.classList.contains('cooky-selecting-paragraph'))
+            element?.classList.remove('cooky-selecting-paragraph')
+          const selectedElement = element?.querySelectorAll('cooky-selection')
+          selectedElement?.forEach((element) => {
+            element.outerHTML = element.textContent || ''
+          })
+          setFixed(false)
+          elementRef.current = undefined
+        }} />
       </div>}
     </>
   )

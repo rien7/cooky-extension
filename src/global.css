@@ -4,7 +4,12 @@
   color: #9ca3af;
 }
 
-.highlight::selection, .cooky-selection-paragraph::selection {
+.cooky-selecting-paragraph {
+  z-index: 2;
+  position: relative;
+}
+
+.highlight::selection, .cooky-selecting-paragraph::selection {
   background-color: #fb923c4d;
   color: #fb923c;
 }

@@ -11,9 +11,45 @@ cooky-translator {
   z-index: 99
 }
 
-.absolute {
-  position: absolute;
-  transition: all .3s ease-in-out;
+.element-bounding {
+  @apply bg-orange-400/20 absolute transition-all duration-300 rounded-lg cursor-pointer;
+}
+
+.element-bounding.block {
+  @apply bg-red-400/20 cursor-not-allowed;
+}
+
+.element-bounding.fixed {
+  @apply bg-transparent cursor-default overflow-hidden;
+}
+
+.block > .float-block {
+  @apply border-red-400 border-solid bg-red-400;
+}
+
+.float-block {
+  @apply w-3 border-2 box-border border-orange-400 border-dashed rounded-lg m-2 bg-transparent;
+  height: -webkit-fill-available;
+}
+
+.fixed > .float-block {
+  @apply border-solid;
+}
+
+.fixed > .comfirm {
+  @apply w-6 h-6 bg-orange-400 absolute rounded-full -right-2 -bottom-2 transition-all cursor-pointer;
+}
+
+.fixed > .cancle {
+  @apply w-6 h-6 bg-red-400 absolute rounded-full -right-2 -top-2 transition-all cursor-pointer;
+}
+
+.fixed > .comfirm:hover {
+  @apply w-20 h-20 -right-4 -bottom-4 z-[1];
+}
+
+.fixed > .cancle:hover {
+  @apply w-20 h-20 -right-4 -top-4 z-[1];
 }
 
 .float-dot {

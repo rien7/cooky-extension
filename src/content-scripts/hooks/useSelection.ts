@@ -124,8 +124,6 @@ export default function useSelection(dom: HTMLElement | undefined) {
     }
 
     setSelections(selections)
-    if (!dom.classList.contains('cooky-selection-paragraph'))
-      dom.classList.add('cooky-selection-paragraph')
   }
 
   useEffect(() => {
