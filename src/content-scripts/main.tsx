@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import styles from '../index.css?inline'
 import App from './App.tsx'
-import './global.css'
-import styles from './index.css?inline'
+import '../global.css'
 
 const root = document.createElement('cooky-translator')
 const shadowRoot = root.attachShadow({ mode: 'open' })

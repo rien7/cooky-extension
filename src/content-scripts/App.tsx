@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import useElementBounding from './content-scripts/hooks/useElementBounding'
-import useMouseElement from './content-scripts/hooks/useMouseElement'
-import useSelection from './content-scripts/hooks/useSelection'
-import { OpenAi } from './utils/openai'
-import useKeyPress from './content-scripts/hooks/useKeyPress'
+import { OpenAi } from '../utils/openai'
+import useElementBounding from './hooks/useElementBounding'
+import useMouseElement from './hooks/useMouseElement'
+import useSelection from './hooks/useSelection'
+import useKeyPress from './hooks/useKeyPress'
 
 function App() {
   const [fixed, setFixed] = useState(false)
@@ -93,7 +93,7 @@ function App() {
   return (
     <>
       {showBlock && bounding && <div className={`element-bounding ${fixed ? 'fixed' : ''} ${element?.classList.contains('cooky-selection-paragraph') ? 'block' : ''}`}
-      style={{ left: bounding.rect.left + scrollX - 33, top: bounding.rect.top + window.scrollY - 10, width: bounding.rect.width + 46, height: bounding.rect.height + 20 }}
+      style={{ left: bounding.rect.left + window.scrollX - 10, top: bounding.rect.top + window.scrollY - 10, width: bounding.rect.width + 20, height: bounding.rect.height + 20 }}
       onClick={() => {
         const classList = element?.classList
         if (classList?.contains('cooky-selection-paragraph'))
@@ -103,8 +103,7 @@ function App() {
           element?.classList.add('cooky-selecting-paragraph')
         elementRef.current = element as HTMLElement
       }}>
-        <div className='float-block' />
-        <div className='comfirm' onClick={(e) => {
+        <div className='confirm' onClick={(e) => {
           e.stopPropagation()
           if (!element?.classList.contains('cooky-selection-paragraph'))
             element?.classList.add('cooky-selection-paragraph')

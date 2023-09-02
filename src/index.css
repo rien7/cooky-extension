@@ -23,33 +23,20 @@ cooky-translator {
   @apply bg-transparent cursor-default overflow-hidden;
 }
 
-.block > .float-block {
-  @apply border-red-400 border-solid bg-red-400;
-}
-
-.float-block {
-  @apply w-3 border-2 box-border border-orange-400 border-dashed rounded-lg m-2 bg-transparent;
-  height: -webkit-fill-available;
-}
-
-.fixed > .float-block {
-  @apply border-solid;
-}
-
-.fixed > .comfirm {
+.fixed > .confirm {
   @apply w-6 h-6 bg-orange-400 absolute rounded-full -right-2 -bottom-2 transition-all cursor-pointer;
 }
 
 .fixed > .cancle {
-  @apply w-6 h-6 bg-red-400 absolute rounded-full -right-2 -top-2 transition-all cursor-pointer;
+  @apply w-6 h-6 bg-red-400 absolute rounded-full -left-2 -top-2 transition-all cursor-pointer;
 }
 
-.fixed > .comfirm:hover {
+.fixed > .confirm:hover {
   @apply w-20 h-20 -right-4 -bottom-4 z-[1];
 }
 
 .fixed > .cancle:hover {
-  @apply w-20 h-20 -right-4 -top-4 z-[1];
+  @apply w-20 h-20 -left-4 -top-4 z-[1];
 }
 
 .float-dot {
