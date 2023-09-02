@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Md5 } from 'ts-md5'
 import { OpenAi } from '../utils/openai'
 import useElementBounding from './hooks/useElementBounding'
 import useMouseElement from './hooks/useMouseElement'
@@ -14,6 +15,8 @@ function App() {
   const bounding = useElementBounding(fixed)
   const elementRef = useRef<HTMLElement | undefined>(undefined)
   const selection = useSelection(elementRef.current)
+  const paragraphIdSet = useRef<Set<string>>(new Set())
+  const selectionParagraphIdRef = useRef<string | undefined>(undefined)
 
   // useEffect(() => {
   //   if (keyPress && !fixed) {
@@ -54,8 +57,8 @@ function App() {
           }
           if (explainationCompleted) {
             buffer += data
-            const cookySelectionParagraph = document.querySelectorAll('.cooky-selection-paragraph')
-            if (cookySelectionParagraph.length > 0)
+            const cookySelectionParagraph = document.querySelectorAll(`.paragraph-${selectionParagraphIdRef.current}`)
+            if (cookySelectionParagraph.length === 1)
               cookySelectionParagraph[cookySelectionParagraph.length - 1].setAttribute('data', buffer)
           }
           else {
@@ -81,11 +84,12 @@ function App() {
               }
             }
           }
-          setFixed(false)
-          if (element?.classList.contains('cooky-selecting-paragraph'))
-            element?.classList.remove('cooky-selecting-paragraph')
-          elementRef.current = undefined
         }
+        setFixed(false)
+        if (element?.classList.contains('cooky-selecting-paragraph'))
+          element?.classList.remove('cooky-selecting-paragraph')
+        elementRef.current = undefined
+        selectionParagraphIdRef.current = undefined
       }
     }
   }
@@ -105,8 +109,18 @@ function App() {
       }}>
         <div className='confirm' onClick={(e) => {
           e.stopPropagation()
+          let paragraphId = Md5.hashStr(element?.textContent || '').padStart(6, '0').slice(0, 6).toUpperCase()
+          if (paragraphIdSet.current.has(paragraphId)) {
+            const silbingElements = [element]
+            while (paragraphIdSet.current.has(paragraphId)) {
+              silbingElements.push(silbingElements[silbingElements.length - 1]?.nextElementSibling as HTMLElement)
+              paragraphId = Md5.hashStr(silbingElements.map(element => element?.textContent).join('') || '').padStart(6, '0').slice(0, 6).toUpperCase()
+            }
+          }
+          paragraphIdSet.current.add(paragraphId)
+          selectionParagraphIdRef.current = paragraphId
           if (!element?.classList.contains('cooky-selection-paragraph'))
-            element?.classList.add('cooky-selection-paragraph')
+            element?.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
           setShowBlock(false)
           handleClick()
         }}/>
