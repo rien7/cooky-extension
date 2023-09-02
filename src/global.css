@@ -20,14 +20,28 @@
   inherits: false;
 }
 
+@property --color1 {
+  syntax: '<color>';
+  initial-value: rgba(251,146,60,1);
+  inherits: false;
+}
+
+@property --color2 {
+  syntax: '<color>';
+  initial-value: rgba(251,146,60,0.3);
+  inherits: false;
+}
+
 cooky-selection {
-  background: linear-gradient(0deg, rgba(251,146,60,1) 0%, rgba(251,146,60,1) var(--percentage), rgba(251,146,60,0.3) var(--percentage), rgba(251,146,60,0.3) 100%);
+  background: linear-gradient(0deg, var(--color1) 0%, var(--color1) var(--percentage), var(--color2) var(--percentage), var(--color2) 100%);
   cursor: pointer;
-  transition: --percentage 0.3s ease-in-out;
+  transition: --percentage 0.3s ease-in-out, --color1 0.3s ease-in-out, --color2 0.3s ease-in-out;
 }
 
 cooky-selection:hover {
-  --percentage: 20%
+  --percentage: 20%;
+  --color1: rgba(248, 113, 113, 1);
+  --color2: rgba(248, 113, 113, 0.3);
 }
 
 cooky-selection[id^='cooky-selection-']::after {
