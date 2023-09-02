@@ -50,9 +50,19 @@ export default function useSelection(dom: HTMLElement | undefined) {
         }
         else if (!started && node === range.startContainer) {
           started = true
+          if (node.parentElement?.nodeName === 'COOKY-SELECTION') {
+            const parent = node.parentElement as HTMLElement
+            parent.id = `cooky-selection-${randomId}`
+            continue
+          }
           const start = range.startOffset
           const leadingText = node.textContent?.slice(0, start) || ''
           if (node === range.endContainer) {
+            if (node.parentElement?.nodeName === 'COOKY-SELECTION') {
+              const parent = node.parentElement as HTMLElement
+              parent.id = `cooky-selection-${randomId}`
+              break
+            }
             const end = range.endOffset
             const text = node.textContent?.slice(start, end)
             const trailingText = node.textContent?.slice(end) || ''
@@ -75,6 +85,11 @@ export default function useSelection(dom: HTMLElement | undefined) {
           }
         }
         else if (started && node !== range.endContainer) {
+          if (node.parentElement?.nodeName === 'COOKY-SELECTION') {
+            const parent = node.parentElement as HTMLElement
+            parent.id = `cooky-selection-${randomId}`
+            continue
+          }
           const text = node.textContent
           if (text) {
             const selection = document.createElement('cooky-selection')
@@ -84,6 +99,11 @@ export default function useSelection(dom: HTMLElement | undefined) {
           }
         }
         else if (started && node === range.endContainer) {
+          if (node.parentElement?.nodeName === 'COOKY-SELECTION') {
+            const parent = node.parentElement as HTMLElement
+            parent.id = `cooky-selection-${randomId}`
+            break
+          }
           const end = range.endOffset
           const text = node.textContent?.slice(0, end)
           const trailingText = node.textContent?.slice(end) || ''
@@ -98,13 +118,33 @@ export default function useSelection(dom: HTMLElement | undefined) {
       }
       selectionObj.empty()
     }
+    // merge silbing selections with the same id
+    const mergeTreeWalker = document.createTreeWalker(dom)
+    let lastMergeNode: HTMLElement | undefined
+    let lastMergeId = ''
+    const removeList = []
+    while (mergeTreeWalker.nextNode()) {
+      const mergeNode = mergeTreeWalker.currentNode as HTMLElement
+      if (mergeNode.nodeName === 'COOKY-SELECTION') {
+        if (mergeNode.id !== lastMergeId) {
+          lastMergeNode = mergeNode
+          lastMergeId = mergeNode.id
+        }
+        else {
+          if (lastMergeNode) {
+            lastMergeNode.textContent = (lastMergeNode.textContent || '') + mergeNode.textContent
+            removeList.push(mergeNode)
+          }
+        }
+      }
+    }
+    removeList.forEach(node => node.remove())
     const countTreeWalker = document.createTreeWalker(dom)
-    let _countNode = countTreeWalker.nextNode()
     let lastId = ''
     let count = 0
     const selections: { s: number; e: number; id: string }[] = []
-    while (_countNode) {
-      const countNode = _countNode as HTMLElement
+    while (countTreeWalker.nextNode()) {
+      const countNode = countTreeWalker.currentNode as HTMLElement
       if (countNode.childNodes.length === 0) {
         count += countNode.textContent?.length || 0
       }
@@ -120,7 +160,6 @@ export default function useSelection(dom: HTMLElement | undefined) {
           selections[index].e = count + (countNode.textContent?.length || 0)
         }
       }
-      _countNode = countTreeWalker.nextNode()
     }
 
     setSelections(selections)

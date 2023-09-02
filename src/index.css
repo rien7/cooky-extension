@@ -12,7 +12,7 @@ cooky-translator {
 }
 
 .element-bounding {
-  @apply bg-orange-400/20 absolute transition-all duration-300 rounded-lg cursor-pointer;
+  @apply bg-orange-400/20 absolute transition-all duration-300 rounded-lg cursor-pointer z-50;
 }
 
 .element-bounding.block {
@@ -20,7 +20,7 @@ cooky-translator {
 }
 
 .element-bounding.fixed {
-  @apply bg-transparent cursor-default overflow-hidden;
+  @apply bg-transparent cursor-default overflow-hidden z-0;
 }
 
 .fixed > .confirm {
