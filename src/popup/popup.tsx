@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
+import languages from '../utils/languages'
 
 export default function Popup() {
   const [openAIApiKey, setOpenAIApiKey] = useState('')
+  const [targetLanguageCode, setTargetLanguageCode] = useState(languages[0].code)
 
   useEffect(() => {
     chrome.storage.local.get(['openAIApiKey'], (result) => {
       setOpenAIApiKey(result.openAIApiKey)
+    })
+    chrome.storage.local.get(['targetLanguageCode'], (result) => {
+      setTargetLanguageCode(result.targetLanguageCode)
     })
   }, [])
 
@@ -13,6 +18,12 @@ export default function Popup() {
     const { value } = event.target
     chrome.storage.local.set({ openAIApiKey: value })
     setOpenAIApiKey(value)
+  }
+
+  function handleSelectChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const { value } = event.target
+    chrome.storage.local.set({ targetLanguageCode: value })
+    setTargetLanguageCode(value)
   }
 
   return (
@@ -25,7 +36,18 @@ export default function Popup() {
           placeholder="OpenAI Api Key"
           defaultValue={openAIApiKey}
           onChange={handleChange}
-      />
+        />
+        <p>Target Language</p>
+        <select
+          className="mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          value={targetLanguageCode}
+          onChange={handleSelectChange}>
+          {languages.map((language) => {
+            return (
+              <option key={language.code} value={language.code}>{language.name}</option>
+            )
+          })}
+        </select>
       </div>
     </>
   )
