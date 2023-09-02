@@ -97,7 +97,7 @@ function App() {
   return (
     <>
       {showBlock && bounding && <div className={`element-bounding ${fixed ? 'fixed' : ''} ${element?.classList.contains('cooky-selection-paragraph') ? 'block' : ''}`}
-      style={{ left: bounding.rect.left + window.scrollX - 10, top: bounding.rect.top + window.scrollY - 10, width: bounding.rect.width + 20, height: bounding.rect.height + 20 }}
+      style={{ left: bounding.left + bounding.scrollX - 10, top: bounding.top + bounding.scrollY - 10, width: bounding.width + 20, height: bounding.height + 20 }}
       onClick={() => {
         const classList = element?.classList
         if (classList?.contains('cooky-selection-paragraph'))
