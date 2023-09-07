@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
 
-export default function useKeyPress(code: string) {
+export default function useKeyPress(codes: string[]) {
   const [keyPress, setKeyPress] = useState(false)
+  const [keys, setKeys] = useState<string[]>([])
 
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.code === code)
-      setKeyPress(true)
+    setKeys(keys => [...keys, event.key])
   }
 
   function handleKeyUp(event: KeyboardEvent) {
-    if (event.code === code)
-      setKeyPress(false)
+    setKeys(keys => keys.filter(key => key !== event.key))
   }
+
+  useEffect(() => {
+    setKeyPress(codes.length > 0 && codes.toString() === keys.toString())
+  }, [keys])
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown)

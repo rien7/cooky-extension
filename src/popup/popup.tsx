@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import languages from '../utils/languages'
+import { ShortcutKey } from '../utils/shortcutKey'
 
 export default function Popup() {
   const [openAIApiKey, setOpenAIApiKey] = useState('')
   const [targetLanguageCode, setTargetLanguageCode] = useState(languages[0].code)
+  const [shortcut, setShortcut] = useState<ShortcutKey[]>([])
 
   useEffect(() => {
     chrome.storage.local.get(['openAIApiKey'], (result) => {
@@ -11,6 +13,9 @@ export default function Popup() {
     })
     chrome.storage.local.get(['targetLanguageCode'], (result) => {
       setTargetLanguageCode(result.targetLanguageCode)
+    })
+    chrome.storage.local.get(['shortcut'], (result) => {
+      setShortcut(result.shortcut)
     })
   }, [])
 
@@ -48,6 +53,50 @@ export default function Popup() {
             )
           })}
         </select>
+        <p>Shortcut</p>
+        <div className='mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50'>
+          {
+            shortcut.map((key, index) => {
+              return (
+                <>
+                  <button
+                    key={key}
+                    className={'m-1 inline-flex h-6 w-auto items-center rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 font-mono text-xs hover:bg-neutral-300'}
+                    onClick={() => {
+                      setShortcut(shortcut.filter(k => k !== key))
+                      chrome.storage.local.set({ shortcut: shortcut.filter(k => k !== key) })
+                    }}
+                  >
+                    {key}
+                  </button>
+                  {index !== shortcut.length - 1 && '+'}
+                </>
+              )
+            })
+          }
+        </div>
+        <div>
+          {[
+            ShortcutKey.Ctrl,
+            ShortcutKey.Shift,
+            ShortcutKey.Alt,
+            ShortcutKey.Meta,
+          ].map((key) => {
+            return (
+              <button
+                key={key}
+                disabled={shortcut.includes(key)}
+                className="mx-1 mt-1 h-7 w-auto rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 font-mono text-xs hover:bg-neutral-300 disabled:opacity-50 disabled:hover:bg-neutral-50"
+                onClick={() => {
+                  setShortcut([...shortcut, key])
+                  chrome.storage.local.set({ shortcut: [...shortcut, key] })
+                }}
+              >
+                {key}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </>
   )

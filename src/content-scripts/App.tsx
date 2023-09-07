@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Md5 } from 'ts-md5'
 import { OpenAi } from '../utils/openai'
+import type { ShortcutKey } from '../utils/shortcutKey'
 import useElementBounding from './hooks/useElementBounding'
 import useMouseElement from './hooks/useMouseElement'
 import useSelection from './hooks/useSelection'
@@ -11,7 +12,8 @@ function App() {
   const [showBlock, setShowBlock] = useState(false)
   // const floatDotPositoin = useFloatDotPosition(fixed)
   const element = useMouseElement(fixed)
-  const keyPress = useKeyPress('MetaLeft')
+  const keyPressSetting = useRef<ShortcutKey[]>([])
+  const keyPress = useKeyPress(keyPressSetting.current)
   const bounding = useElementBounding(fixed)
   const elementRef = useRef<HTMLElement | undefined>(undefined)
   const selection = useSelection(elementRef.current)
@@ -29,6 +31,16 @@ function App() {
   //   }
   //   else { elementRef.current = undefined }
   // }, [keyPress, fixed])
+
+  useEffect(() => {
+    chrome.storage.local.get(['shortcut'], (result) => {
+      keyPressSetting.current = result.shortcut
+    })
+    chrome.storage.onChanged.addListener((changes) => {
+      if (changes.shortcut)
+        keyPressSetting.current = changes.shortcut.newValue
+    })
+  }, [])
 
   useEffect(() => {
     if (keyPress && !fixed)
