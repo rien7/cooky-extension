@@ -30,6 +30,10 @@ export default function useSelection(dom: HTMLElement | undefined) {
       })
       return
     }
+    if (!dom.contains(selectionObj.anchorNode) || !dom.contains(selectionObj.focusNode)) {
+      selectionObj.empty()
+      return
+    }
     const selectedText = selectionObj.toString()
     if (selectedText !== '') {
       const selectionElement = document.createElement('cooky-selection')
@@ -118,27 +122,6 @@ export default function useSelection(dom: HTMLElement | undefined) {
       }
       selectionObj.empty()
     }
-    // merge silbing selections with the same id
-    const mergeTreeWalker = document.createTreeWalker(dom)
-    let lastMergeNode: HTMLElement | undefined
-    let lastMergeId = ''
-    const removeList = []
-    while (mergeTreeWalker.nextNode()) {
-      const mergeNode = mergeTreeWalker.currentNode as HTMLElement
-      if (mergeNode.nodeName === 'COOKY-SELECTION') {
-        if (mergeNode.id !== lastMergeId) {
-          lastMergeNode = mergeNode
-          lastMergeId = mergeNode.id
-        }
-        else {
-          if (lastMergeNode) {
-            lastMergeNode.textContent = (lastMergeNode.textContent || '') + mergeNode.textContent
-            removeList.push(mergeNode)
-          }
-        }
-      }
-    }
-    removeList.forEach(node => node.remove())
     const countTreeWalker = document.createTreeWalker(dom)
     let lastId = ''
     let count = 0

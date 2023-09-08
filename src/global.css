@@ -34,14 +34,18 @@
 
 cooky-selection {
   background: linear-gradient(0deg, var(--color1) 0%, var(--color1) var(--percentage), var(--color2) var(--percentage), var(--color2) 100%);
-  cursor: pointer;
   transition: --percentage 0.3s ease-in-out, --color1 0.3s ease-in-out, --color2 0.3s ease-in-out;
+  color: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  font-size: inherit;
 }
 
-cooky-selection:hover {
+.cooky-selecting-paragraph cooky-selection:hover {
   --percentage: 20%;
   --color1: rgba(248, 113, 113, 1);
   --color2: rgba(248, 113, 113, 0.3);
+  cursor: pointer;
 }
 
 cooky-selection[id^='cooky-selection-']::after {
@@ -53,9 +57,10 @@ cooky-selection[id^='cooky-selection-']::after {
 .cooky-selection-paragraph::after {
   content: attr(data);
   display: block;
-  font-size: 1rem;
+  font-size: inherit;
   border-left: 0.25rem solid #fb923c;
   padding-left: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 /* .highlight::before,

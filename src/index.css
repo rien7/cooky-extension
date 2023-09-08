@@ -8,7 +8,6 @@ cooky-translator {
   height: 0;
   inset: auto;
   isolation: isolate;
-  z-index: 99
 }
 
 .element-bounding {
@@ -20,7 +19,7 @@ cooky-translator {
 }
 
 .element-bounding.fixed {
-  @apply bg-transparent cursor-default overflow-hidden z-0;
+  @apply bg-transparent cursor-default overflow-hidden;
 }
 
 .fixed > .confirm {
@@ -28,15 +27,39 @@ cooky-translator {
 }
 
 .fixed > .cancle {
-  @apply w-6 h-6 bg-red-400 absolute rounded-full -left-2 -top-2 transition-all cursor-pointer;
+  @apply w-6 h-6 bg-red-400 absolute rounded-full -left-2 -top-2 transition-all cursor-pointer flex items-center justify-center;
+}
+
+.cancle > svg, .confirm > svg {
+  @apply opacity-0 w-0 h-0 transition absolute m-3;
+}
+
+.cancle > svg {
+  @apply bottom-0 right-0;
+}
+
+.confirm > svg {
+  @apply top-0 left-0;
+}
+
+.cancle > svg > *, .confirm > svg > * {
+  @apply stroke-white stroke-2;
 }
 
 .fixed > .confirm:hover {
-  @apply w-20 h-20 -right-4 -bottom-4 z-[1];
+  @apply w-20 h-20 -right-4 -bottom-4 z-50;
 }
 
 .fixed > .cancle:hover {
-  @apply w-20 h-20 -left-4 -top-4 z-[1];
+  @apply w-20 h-20 -left-4 -top-4 z-50;
+}
+
+.fixed > .cancle:hover > svg, .fixed > .confirm:hover > svg {
+  @apply opacity-100 w-10 h-10;
+}
+
+.pointer-events-none {
+  pointer-events: none;
 }
 
 .float-dot {

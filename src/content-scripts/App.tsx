@@ -2,16 +2,20 @@ import { useEffect, useRef, useState } from 'react'
 import { Md5 } from 'ts-md5'
 import { OpenAi } from '../utils/openai'
 import type { ShortcutKey } from '../utils/shortcutKey'
+import ArrowRightSvg from '../assets/arrow-right'
+import CloseSvg from '../assets/close'
 import useElementBounding from './hooks/useElementBounding'
 import useMouseElement from './hooks/useMouseElement'
 import useSelection from './hooks/useSelection'
 import useKeyPress from './hooks/useKeyPress'
+import useMouse from './hooks/useMouse'
 
 function App() {
   const [fixed, setFixed] = useState(false)
   const [showBlock, setShowBlock] = useState(false)
-  // const floatDotPositoin = useFloatDotPosition(fixed)
   const element = useMouseElement(fixed)
+  const boundingRef = useRef<HTMLDivElement | null>(null)
+  const position = useMouse()
   const keyPressSetting = useRef<ShortcutKey[]>([])
   const keyPress = useKeyPress(keyPressSetting.current)
   const bounding = useElementBounding(fixed)
@@ -19,18 +23,7 @@ function App() {
   const selection = useSelection(elementRef.current)
   const paragraphIdSet = useRef<Set<string>>(new Set())
   const selectionParagraphIdRef = useRef<string | undefined>(undefined)
-
-  // useEffect(() => {
-  //   if (keyPress && !fixed) {
-  //     const randomId = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase()
-  //     if (!element.classList.contains('cooky-selection-paragraph')) {
-  //       element.classList.add('cooky-selection-paragraph')
-  //       element.classList.add(`paragraph-${randomId}`)
-  //     }
-  //     elementRef.current = element as HTMLElement
-  //   }
-  //   else { elementRef.current = undefined }
-  // }, [keyPress, fixed])
+  const bodyBounding = document.body.getBoundingClientRect()
 
   useEffect(() => {
     chrome.storage.local.get(['shortcut'], (result) => {
@@ -50,6 +43,19 @@ function App() {
     else
       setShowBlock(false)
   }, [keyPress, fixed, element])
+
+  useEffect(() => {
+    if (!fixed || !position || !bounding)
+      return
+    if (position.clientX > bounding.left && position.clientX < bounding.left + bounding.width && position.clientY > bounding.top && position.clientY < bounding.top + bounding.height) {
+      if (!boundingRef.current?.classList.contains('pointer-events-none'))
+        boundingRef.current?.classList.add('pointer-events-none')
+    }
+    else {
+      if (boundingRef.current?.classList.contains('pointer-events-none'))
+        boundingRef.current?.classList.remove('pointer-events-none')
+    }
+  }, [fixed, position])
 
   async function handleClick() {
     if (!fixed) {
@@ -108,8 +114,8 @@ function App() {
 
   return (
     <>
-      {showBlock && bounding && <div className={`element-bounding ${fixed ? 'fixed' : ''} ${element?.classList.contains('cooky-selection-paragraph') ? 'block' : ''}`}
-      style={{ left: bounding.left + bounding.scrollX - 10, top: bounding.top + bounding.scrollY - 10, width: bounding.width + 20, height: bounding.height + 20 }}
+      {showBlock && bounding && <div ref={boundingRef} className={`element-bounding ${fixed ? 'fixed' : ''} ${element?.classList.contains('cooky-selection-paragraph') ? 'block' : ''}`}
+      style={{ left: bounding.left + bounding.scrollX - 10 - bodyBounding.left, top: bounding.top + bounding.scrollY - 10, width: bounding.width + 20, height: bounding.height + 20 }}
       onClick={() => {
         const classList = element?.classList
         if (classList?.contains('cooky-selection-paragraph'))
@@ -135,7 +141,9 @@ function App() {
             element?.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
           setShowBlock(false)
           handleClick()
-        }}/>
+        }} >
+          <ArrowRightSvg />
+        </div>
         <div className='cancle' onClick={(e) => {
           e.stopPropagation()
           if (element?.classList.contains('cooky-selecting-paragraph'))
@@ -146,7 +154,9 @@ function App() {
           })
           setFixed(false)
           elementRef.current = undefined
-        }} />
+        }} >
+          <CloseSvg />
+        </div>
       </div>}
     </>
   )
