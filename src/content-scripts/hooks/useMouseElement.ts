@@ -5,7 +5,7 @@ export default function useMouseElement(fixed: boolean = false) {
   const [element, setElement] = useState<Element | undefined>(undefined)
   const position = useMouse()
   const excludeTagName = ['', 'DIV', 'HTML', 'BODY']
-  const includeTagName = ['P', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT', 'SECTION']
+  const includeTagName = ['P', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT']
 
   useEffect(() => {
     if (fixed)

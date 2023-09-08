@@ -1,8 +1,21 @@
 import { useEffect, useState } from 'react'
 import useMouseElement from './useMouseElement'
 
+export interface ElementBoundingType {
+  x: number
+  y: number
+  width: number
+  height: number
+  top: number
+  right: number
+  bottom: number
+  left: number
+  scrollX: number
+  scrollY: number
+}
+
 export default function useElementBounding(fixed: boolean = false) {
-  const [elementBounding, setElementBounding] = useState<{ x: number; y: number; width: number; height: number; top: number; right: number; bottom: number; left: number; scrollX: number; scrollY: number } | undefined>(undefined)
+  const [elementBounding, setElementBounding] = useState<ElementBoundingType | undefined>(undefined)
   const element = useMouseElement()
 
   useEffect(() => {
