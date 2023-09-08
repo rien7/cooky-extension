@@ -83,7 +83,8 @@ function App() {
                             boundingRef={boundingRef}
                             elementRef={elementRef}
                             fixed={fixed}
-                            setFixed={setFixed} >
+                            setFixed={setFixed}
+                            _paragraphData={paragraphData} >
               <ConfirmDot element={element}
                           _paragraphData={paragraphData}
                           setShowBlock={setShowBlock}

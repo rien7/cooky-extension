@@ -9,6 +9,10 @@
   position: relative;
 }
 
+.cooky-selecting-paragraph a {
+  pointer-events: none;
+}
+
 .highlight::selection, .cooky-selecting-paragraph::selection {
   background-color: #fb923c4d;
   color: #fb923c;
@@ -61,6 +65,7 @@ cooky-selection[id^='cooky-selection-']::after {
   border-left: 0.25rem solid #fb923c;
   padding-left: 0.5rem;
   margin-top: 0.75rem;
+  white-space: pre-wrap;
 }
 
 /* .highlight::before,
