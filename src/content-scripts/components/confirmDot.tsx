@@ -1,6 +1,8 @@
 import { Md5 } from 'ts-md5'
+import { useEffect, useRef } from 'react'
 import type { ParagraphDataType } from '../App'
 import { OpenAi } from '../../utils/openai'
+import { SendType } from '../../utils/sendType'
 
 export default function ConfirmDot(props: {
   element: Element
@@ -11,6 +13,17 @@ export default function ConfirmDot(props: {
   selection: { s: number; e: number; id: string }[]
 }) {
   const { element, _paragraphData, setShowBlock, setFixed, fixed, selection } = props
+  const sendType = useRef<SendType>(SendType.DEFAULT)
+
+  useEffect(() => {
+    chrome.storage.local.get(['sendType'], (result) => {
+      sendType.current = result.sendType
+    })
+    chrome.storage.onChanged.addListener((changes) => {
+      if (changes.sendType)
+        sendType.current = changes.sendType.newValue
+    })
+  }, [])
 
   function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation()
@@ -38,7 +51,7 @@ export default function ConfirmDot(props: {
     if (!element.classList.contains('cooky-selection-paragraph'))
       element.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
     setShowBlock(false)
-    sendMessage(pd, fixed, setFixed, element, selection)
+    sendMessage(pd, fixed, setFixed, element, selection, sendType.current !== SendType.DEFAULT ? sendType.current : undefined)
   }
 
   return (
@@ -56,13 +69,6 @@ export default function ConfirmDot(props: {
   )
 }
 
-enum SendType {
-  TRANSLATE_ONLY,
-  EXPLAIN_ONLY,
-  TRANSLATE_AND_EXPLAIN_MIXED,
-  TRANSLATE_AND_EXPLAIN_SEPARATELY,
-}
-
 async function sendMessage(
   paragraphData: ParagraphDataType,
   fixed: boolean,
@@ -74,6 +80,7 @@ async function sendMessage(
   if (!fixed)
     setFixed(true)
   let buffer = ''
+  let anotherBuffer = ''
   let explainationCompleted = false
   if (selection && element.textContent) {
     if (selection.length === 0 && sendType !== SendType.EXPLAIN_ONLY)
@@ -84,9 +91,9 @@ async function sendMessage(
       for await (const part of stream) {
         const data = part.choices[0]?.delta?.content || ''
         buffer += data
+        setTranslation(paragraphData.id, buffer)
+        paragraphData.textTranslation = buffer
       }
-      setTranslation(paragraphData.id, buffer)
-      paragraphData.textTranslation = buffer
     }
     // explain only
     else if (sendType === SendType.EXPLAIN_ONLY) {
@@ -140,6 +147,43 @@ async function sendMessage(
           paragraphData.textTranslation = buffer
         }
       }
+    }
+    // translate and explain separately
+    else if (sendType === SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY) {
+      // eslint-disable-next-line no-async-promise-executor
+      const translate = new Promise(async (resolve) => {
+        const stream = await OpenAi.SINGLETON.translate(element.textContent!)
+        for await (const part of stream) {
+          const data = part.choices[0]?.delta?.content || ''
+          buffer += data
+          setTranslation(paragraphData.id, buffer)
+          paragraphData.textTranslation = buffer
+        }
+        resolve(undefined)
+      })
+      // eslint-disable-next-line no-async-promise-executor
+      const explain = new Promise(async (resolve) => {
+        const stream = await OpenAi.SINGLETON.explain(element.textContent!, selection)
+        for await (const part of stream) {
+          const data = part.choices[0]?.delta?.content || ''
+          if (data === '❖' || data === '\n') {
+            anotherBuffer = ''
+            continue
+          }
+          anotherBuffer += data
+          const result = getSelectionTranslationFromBuffer(anotherBuffer, selection)
+          if (result) {
+            setSelectionTranslation(result.id, result.text)
+            const seleTran = paragraphData.selectionsTranslation.find(item => item.id === result.id)
+            if (!seleTran)
+              paragraphData.selectionsTranslation.push(result)
+            else
+              seleTran.text = result.text
+          }
+        }
+        resolve(undefined)
+      })
+      await Promise.all([translate, explain])
     }
 
     // send complated

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import languages from '../utils/languages'
 import { ShortcutKey } from '../utils/shortcutKey'
+import { SendType } from '../utils/sendType'
 
 export default function Popup() {
   const [openAIApiKey, setOpenAIApiKey] = useState('')
   const [targetLanguageCode, setTargetLanguageCode] = useState(languages[0].code)
   const [shortcut, setShortcut] = useState<ShortcutKey[]>([])
+  const [sendType, setSendType] = useState<SendType>(SendType.DEFAULT)
 
   useEffect(() => {
     chrome.storage.local.get(['openAIApiKey'], (result) => {
@@ -16,6 +18,9 @@ export default function Popup() {
     })
     chrome.storage.local.get(['shortcut'], (result) => {
       setShortcut(result.shortcut)
+    })
+    chrome.storage.local.get(['sendType'], (result) => {
+      setSendType(result.sendType)
     })
   }, [])
 
@@ -29,6 +34,13 @@ export default function Popup() {
     const { value } = event.target
     chrome.storage.local.set({ targetLanguageCode: value })
     setTargetLanguageCode(value)
+  }
+
+  function handleSendTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    const { value } = event.target
+    const sendType = Number.parseInt(value) as SendType
+    chrome.storage.local.set({ sendType })
+    setSendType(sendType)
   }
 
   return (
@@ -52,6 +64,14 @@ export default function Popup() {
               <option key={language.code} value={language.code}>{language.name}</option>
             )
           })}
+        </select>
+        <p>Send Type</p>
+        <select
+          className="mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          value={sendType}
+          onChange={handleSendTypeChange}>
+            <option value={SendType.TRANSLATE_AND_EXPLAIN_MIXED}>合并翻译 (使用较少 token)</option>
+            <option value={SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY}>分开翻译 (使用较多 token)</option>
         </select>
         <p>Shortcut</p>
         <div className='mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50'>
