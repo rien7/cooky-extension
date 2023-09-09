@@ -10,7 +10,7 @@ export default function FloatChat(props: {
 
   return (
     <>
-      <div className={`float-chat absolute min-h-[7rem] w-72 rounded-[20px] rounded-tr-none bg-blue-200 p-3 transition-opacity ${paragraphData ? 'opacity-100' : 'opacity-0'}`}
+      <div className={`float-chat absolute z-40 min-h-[7rem] w-72 rounded-[20px] rounded-tr-none bg-blue-200 p-3 transition-opacity ${paragraphData ? 'opacity-100' : 'opacity-0'}`}
         style={{
           left: (paragraphData?.position.right || 0) + (paragraphData?.position.scrollX || 0) - bodyBounding.left - 283,
           top: (paragraphData?.position.top || 0) + (paragraphData?.position.scrollY || 0) + 32,
