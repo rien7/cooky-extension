@@ -6,10 +6,10 @@ import type { ParagraphDataType } from '../App'
 export async function sendMessage(
   paragraphData: ParagraphDataType,
   setFixed: React.Dispatch<React.SetStateAction<boolean>>,
-  element: Element,
-  selection: { s: number; e: number; id: string }[],
   sendType: SendType = SendType.TRANSLATE_AND_EXPLAIN_MIXED,
 ) {
+  const element = paragraphData.element
+  const selection = paragraphData.selections
   let buffer = ''
   let anotherBuffer = ''
   let explainationCompleted = false

@@ -2,16 +2,18 @@ import { useEffect, useRef } from 'react'
 import type { ParagraphDataType } from '../App'
 import { SendType } from '../../utils/sendType'
 import { generateParagraphId, sendMessage } from '../util/sendMessages'
+import type { ElementBoundingType } from '../hooks/useElementBounding'
 
 export default function ConfirmDot(props: {
   element: Element
+  bounding: ElementBoundingType
   _paragraphData: React.MutableRefObject<ParagraphDataType[]>
   setShowBlock: React.Dispatch<React.SetStateAction<boolean>>
   setFixed: React.Dispatch<React.SetStateAction<boolean>>
   fixed: boolean
   selection: { s: number; e: number; id: string }[]
 }) {
-  const { element, _paragraphData, setShowBlock, setFixed, fixed, selection } = props
+  const { element, bounding, _paragraphData, setShowBlock, setFixed, fixed, selection } = props
   const sendType = useRef<SendType>(SendType.DEFAULT)
 
   useEffect(() => {
@@ -29,21 +31,38 @@ export default function ConfirmDot(props: {
     const paragraphData = _paragraphData.current
     // generate paragraph id
     const paragraphId = generateParagraphId(element, paragraphData)
-    const pd = {
-      id: paragraphId,
-      element: element as HTMLElement,
-      current: true,
-      text: element.textContent || '',
-      selections: selection,
-      selectionsTranslation: [],
+    let existedPd = paragraphData.find(pd => pd.id === paragraphId)
+    if (existedPd) {
+      existedPd.current = true
+      existedPd.selections = selection
+      existedPd.selectionsTranslation = []
     }
-    paragraphData.push(pd)
+    else {
+      // add pd to paragraphData
+      const pd: ParagraphDataType = {
+        id: paragraphId,
+        element: element as HTMLElement,
+        current: true,
+        position: bounding,
+        text: element.textContent || '',
+        selections: selection,
+        selectionsTranslation: [],
+        chatHistory: [],
+      }
+      paragraphData.push(pd)
+      existedPd = pd
+    }
+
+    if (element.hasAttribute('re-select')) {
+      element.removeAttribute('re-select')
+      sendType.current = SendType.EXPLAIN_ONLY
+    }
 
     // add paragraph id to element
     if (!element.classList.contains('cooky-selection-paragraph'))
       element.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
     setShowBlock(false)
-    sendMessage(pd, setFixed, element, selection, sendType.current !== SendType.DEFAULT ? sendType.current : undefined)
+    sendMessage(existedPd, setFixed, sendType.current !== SendType.DEFAULT ? sendType.current : undefined)
   }
 
   return (

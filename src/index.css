@@ -13,3 +13,28 @@ cooky-translator {
 .pointer-events-none {
   pointer-events: none;
 }
+
+.float-dot-btn {
+  @apply mx-auto h-7 w-7 rounded-full bg-transparent p-1 transition
+}
+
+.float-chat::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: 0;
+  top: -20px;
+  background: radial-gradient(20px at 00px 00px, #00000000 20px, #bfdbfe 20px)
+}
+
+.float-chat::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 40px;
+  right: -20px;
+  top: 60px;
+  background: radial-gradient(20px at 20px 40px, #00000000 20px, #bfdbfe 20px);
+  z-index: -1;
+}

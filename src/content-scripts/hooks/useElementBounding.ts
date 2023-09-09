@@ -14,12 +14,14 @@ export interface ElementBoundingType {
   scrollY: number
 }
 
-export default function useElementBounding(fixed: boolean = false) {
+export default function useElementBounding(fixed: boolean = false, _element?: HTMLElement) {
   const [elementBounding, setElementBounding] = useState<ElementBoundingType | undefined>(undefined)
-  const element = useMouseElement()
+  let element = useMouseElement()
+  if (_element)
+    element = _element
 
   useEffect(() => {
-    if (fixed)
+    if (fixed && !_element)
       return
     const boundingClientRect = element?.getBoundingClientRect()
     if (!boundingClientRect) {

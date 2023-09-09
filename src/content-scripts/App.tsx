@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ShortcutKey } from '../utils/shortcutKey'
+import type { ElementBoundingType } from './hooks/useElementBounding'
 import useElementBounding from './hooks/useElementBounding'
 import useMouseElement from './hooks/useMouseElement'
 import useSelection from './hooks/useSelection'
@@ -8,15 +9,19 @@ import useMouse from './hooks/useMouse'
 import ConfirmDot from './components/confirmDot'
 import CancleDot from './components/cancleDot'
 import ElementBounding from './components/elementBounding'
+import FloatDot from './components/floatDot'
+import FloatChat from './components/floatChat'
 
 export interface ParagraphDataType {
   id: string
   element: HTMLElement
   current: boolean
+  position: ElementBoundingType
   text?: string
   textTranslation?: string
   selections: { s: number; e: number; id: string }[]
   selectionsTranslation: { id: string; text: string }[]
+  chatHistory: { role: 'user' | 'assistant'; text: string; timestamp: number }[]
 }
 
 function App() {
@@ -32,9 +37,11 @@ function App() {
 
   const paragraphData = useRef<ParagraphDataType[]>([])
 
+  const [activeChat, setActiveChat] = useState<ParagraphDataType | undefined>(undefined)
+
   const position = useMouse()
   const element = useMouseElement(fixed)
-  const bounding = useElementBounding(fixed)
+  const bounding = useElementBounding(fixed, elementRef.current)
   const keyPress = useKeyPress(keyPressSetting.current)
   const selection = useSelection(elementRef.current)
 
@@ -86,6 +93,7 @@ function App() {
                             setFixed={setFixed}
                             _paragraphData={paragraphData} >
               <ConfirmDot element={element}
+                          bounding={bounding}
                           _paragraphData={paragraphData}
                           setShowBlock={setShowBlock}
                           setFixed={setFixed}
@@ -97,6 +105,18 @@ function App() {
                          fixed={fixed}/>
            </ElementBounding>
       }
+      { paragraphData.current.map((paragraph) => {
+        return (
+          <FloatDot key={paragraph.id}
+                    paragraphData={paragraph}
+                    fixed={fixed}
+                    setFixed={setFixed}
+                    activeChat={activeChat}
+                    setActiveChat={setActiveChat}
+                    elementRef={elementRef}/>
+        )
+      })}
+      <FloatChat paragraphData={activeChat}/>
     </>
   )
 }
