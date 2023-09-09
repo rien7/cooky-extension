@@ -27,7 +27,7 @@ export class OpenAi {
   }
 
   async translateAndExplain(text: string, selection: { s: number; e: number }[], target?: string) {
-    const systemPrompt = 'You are a translation engine, you can only translate text or explain specified words. Separate explanations with \'\n\'. Separate translation and explanations with \'❖\'. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED. Return in plain text with a fixed format.'
+    const systemPrompt = 'You are a translation engine, you can only translate text or explain specified words. Separate explanations with \'\n\'. Separate translation and explanations with \'❖\'. If \'\n\' in sentence, DONT remove it. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED. Return in plain text with a fixed format.'
     const prompt = `Translate the text into ${target || this.target}, and explain the meaning of specified words.\nSentence: \'${text}\'. Selections: [${selection.map(({ s, e }) => `{\'${s}-${e}\': \'${text.slice(s, e)}\'}`).join(',')}]`
     const msgs: { role: 'system' | 'assistant' | 'user'; content: string }[] = [
       { role: 'system', content: systemPrompt },
@@ -44,7 +44,7 @@ export class OpenAi {
   }
 
   async translate(text: string, target?: string) {
-    const systemPrompt = 'You are a translation engine, you can only translate text. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED.'
+    const systemPrompt = 'You are a translation engine, you can only translate text. If \'\n\' in sentence, DONT remove it. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED.'
     const prompt = `Translate the text into ${target || this.target}.\nSentence: \'${text}\'.`
     const msgs: { role: 'system' | 'assistant' | 'user'; content: string }[] = [
       { role: 'system', content: systemPrompt },
@@ -61,7 +61,7 @@ export class OpenAi {
   }
 
   async explain(text: string, selection: { s: number; e: number }[], target?: string) {
-    const systemPrompt = 'You are a translation engine, you can only explain specified words. Separate explanations with \'\n\'. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED.'
+    const systemPrompt = 'You are a translation engine, you can only explain specified words. Separate explanations with \'\n\'. If \'\n\' in sentence, DONT remove it. You can only reply directly to the result, NO OTHER DATA AND QUOTA MARK NEEDED.'
     const prompt = `Explain the meaning of specified words in ${target || this.target}.\nSentence: \'${text}\'. Selections: [${selection.map(({ s, e }) => `{\'${s}-${e}\': \'${text.slice(s, e)}\'}`).join(',')}]`
     const msgs: { role: 'system' | 'assistant' | 'user'; content: string }[] = [
       { role: 'system', content: systemPrompt },
