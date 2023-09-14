@@ -46,17 +46,17 @@ export default function Popup() {
   return (
     <>
       <div className="m-4 w-[25rem]">
-        <p>OpenAI Api Key</p>
+        <p className='title'>OpenAI Api Key</p>
         <input
-          className="mt-1 block h-[1.5rem] w-full overflow-hidden rounded-md border-2 border-neutral-300 bg-neutral-50 px-2 py-4 font-mono text-xs transition placeholder:text-neutral-300 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          className="block h-[1.5rem] w-full overflow-hidden rounded-md border-2 border-neutral-300 bg-neutral-50 px-2 py-4 font-mono text-xs transition placeholder:text-neutral-300 focus:border-neutral-500 focus:outline-none focus:ring-0"
           type="text"
           placeholder="OpenAI Api Key"
           defaultValue={openAIApiKey}
           onChange={handleChange}
         />
-        <p>Target Language</p>
+        <p className='title'>Target Language</p>
         <select
-          className="mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          className="h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
           value={targetLanguageCode}
           onChange={handleSelectChange}>
           {languages.map((language) => {
@@ -65,16 +65,16 @@ export default function Popup() {
             )
           })}
         </select>
-        <p>Send Type</p>
+        <p className='title'>Send Type</p>
         <select
-          className="mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
+          className="h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50 p-1 focus:border-neutral-500 focus:outline-none focus:ring-0"
           value={sendType}
           onChange={handleSendTypeChange}>
             <option value={SendType.TRANSLATE_AND_EXPLAIN_MIXED}>合并翻译 (使用较少 token)</option>
             <option value={SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY}>分开翻译 (使用较多 token)</option>
         </select>
-        <p>Shortcut</p>
-        <div className='mt-1 h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50'>
+        <p className='title'>Trigger Key</p>
+        <div className='h-9 w-full rounded-md border-2 border-neutral-300 bg-neutral-50'>
           {
             shortcut.map((key, index) => {
               return (
