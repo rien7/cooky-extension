@@ -1,4 +1,4 @@
-![](src/assets/icon+title.png)
+![](src/assets/icon+title+post.png)
 
 # Introduction
 
