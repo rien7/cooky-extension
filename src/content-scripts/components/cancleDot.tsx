@@ -16,6 +16,16 @@ export default function CancleDot(props: {
     })
     setFixed(false)
     elementRef.current = undefined
+
+    // reset <a> tag
+    const aTags = document.querySelectorAll('a')
+    aTags.forEach((aTag) => {
+      const href = aTag.getAttribute('disabled-href')
+      if (href) {
+        aTag.setAttribute('href', href)
+        aTag.removeAttribute('disabled-href')
+      }
+    })
   }
 
   return (

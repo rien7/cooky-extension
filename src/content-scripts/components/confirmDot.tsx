@@ -63,6 +63,16 @@ export default function ConfirmDot(props: {
       element.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
     setShowBlock(false)
     sendMessage(existedPd, setFixed, sendType.current !== SendType.DEFAULT ? sendType.current : undefined)
+
+    // reset <a> tag
+    const aTags = document.querySelectorAll('a')
+    aTags.forEach((aTag) => {
+      const href = aTag.getAttribute('disabled-href')
+      if (href) {
+        aTag.setAttribute('href', href)
+        aTag.removeAttribute('disabled-href')
+      }
+    })
   }
 
   return (

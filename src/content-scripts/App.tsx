@@ -9,8 +9,6 @@ import useMouse from './hooks/useMouse'
 import ConfirmDot from './components/confirmDot'
 import CancleDot from './components/cancleDot'
 import ElementBounding from './components/elementBounding'
-import FloatDot from './components/floatDot'
-import FloatChat from './components/floatChat'
 
 export interface ParagraphDataType {
   id: string
@@ -36,8 +34,6 @@ function App() {
   const boundingRef = useRef<HTMLDivElement | null>(null)
 
   const paragraphData = useRef<ParagraphDataType[]>([])
-
-  const [activeChat, setActiveChat] = useState<ParagraphDataType | undefined>(undefined)
 
   const position = useMouse()
   const element = useMouseElement(fixed)
@@ -105,18 +101,6 @@ function App() {
                          fixed={fixed}/>
            </ElementBounding>
       }
-      { paragraphData.current.map((paragraph) => {
-        return (
-          <FloatDot key={paragraph.id}
-                    paragraphData={paragraph}
-                    fixed={fixed}
-                    setFixed={setFixed}
-                    activeChat={activeChat}
-                    setActiveChat={setActiveChat}
-                    elementRef={elementRef}/>
-        )
-      })}
-      <FloatChat paragraphData={activeChat}/>
     </>
   )
 }

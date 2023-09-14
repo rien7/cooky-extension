@@ -9,8 +9,16 @@
   position: relative;
 }
 
-.cooky-selecting-paragraph a {
-  pointer-events: none;
+a[disabled-href] {
+  text-decoration: none;
+  color: inherit;
+  cursor: inherit;
+}
+
+a[disabled-href]:hover {
+  text-decoration: none;
+  color: inherit;
+  cursor: inherit;
 }
 
 .highlight::selection, .cooky-selecting-paragraph::selection {
@@ -55,7 +63,7 @@ cooky-selection {
 cooky-selection[id^='cooky-selection-']::after {
   content: attr(data);
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: smaller;
 }
 
 .cooky-selection-paragraph::after {
