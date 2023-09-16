@@ -11,13 +11,11 @@
 
 a[disabled-href] {
   text-decoration: none;
-  color: inherit;
   cursor: inherit;
 }
 
 a[disabled-href]:hover {
   text-decoration: none;
-  color: inherit;
   cursor: inherit;
 }
 

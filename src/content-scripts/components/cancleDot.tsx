@@ -32,7 +32,7 @@ export default function CancleDot(props: {
     <>
       { fixed && <div className='group absolute -left-2 -top-2 h-6 w-6 cursor-pointer rounded-full bg-red-400 transition-all hover:-left-4 hover:-top-4 hover:z-50 hover:h-20 hover:w-20'
         onClick={handleClick} >
-          <svg className="absolute left-7 top-7 m-0 h-0 w-0 opacity-0 transition group-hover:h-8 group-hover:w-8 group-hover:opacity-100"
+          <svg className="absolute left-7 top-7 m-0 h-0 w-0 opacity-0 transition group-hover:h-6 group-hover:w-6 group-hover:opacity-100"
             viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_1_14)">
               <path d="M12 2.75C17.1086 2.75 21.25 6.8914 21.25 12C21.25 17.1086 17.1086 21.25 12 21.25C6.89137 21.25 2.75 17.1086 2.75 12C2.75 11.5858 2.41421 11.25 2 11.25C1.58579 11.25 1.25 11.5858 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.0629 17.9371 1.25 12 1.25C11.5858 1.25 11.25 1.5858 11.25 2C11.25 2.4142 11.5858 2.75 12 2.75Z" fill="white"/>
