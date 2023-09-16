@@ -43,12 +43,14 @@ a[disabled-href]:hover {
 }
 
 cooky-selection {
-  background: linear-gradient(0deg, var(--color1) 0%, var(--color1) var(--percentage), var(--color2) var(--percentage), var(--color2) 100%);
+  /* background: linear-gradient(0deg, var(--color1) 0%, var(--color1) var(--percentage), var(--color2) var(--percentage), var(--color2) 100%); */
   transition: --percentage 0.3s ease-in-out, --color1 0.3s ease-in-out, --color2 0.3s ease-in-out;
-  color: inherit;
+  /* color: inherit; */
+  color: var(--color1);
   font-weight: inherit;
   font-family: inherit;
   font-size: inherit;
+  text-shadow: 0 0 10px var(--color1)
 }
 
 .cooky-selecting-paragraph cooky-selection:hover {

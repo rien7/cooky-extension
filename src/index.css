@@ -13,3 +13,37 @@ cooky-translator {
 .pointer-events-none {
   pointer-events: none;
 }
+
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, hsla(0, 91%, 71%, 1) 0%, hsla(27, 96%, 61%, 1) 100%);
+  --border-gradient-padding: 5px;
+  clip-path: polygon(-100vmax -100vmax,
+  100vmax -100vmax,
+  100vmax 100vmax,
+  -100vmax 100vmax,
+  -100vmax -100vmax,
+  var(--border-gradient-padding) var(--border-gradient-padding),
+  var(--border-gradient-padding) calc(100% - var(--border-gradient-padding)),
+  calc(100% - var(--border-gradient-padding)) calc(100% - var(--border-gradient-padding)),
+  calc(100% - var(--border-gradient-padding)) var(--border-gradient-padding),
+  var(--border-gradient-padding) var(--border-gradient-padding));
+  filter: blur(5px);
+  /* --border-gradient-size: 5px;
+  --border-gradient-padding: 5px;
+  clip-path: polygon(
+    var(--border-gradient-padding) var(--border-gradient-padding),
+    var(--border-gradient-padding) calc(100% - var(--border-gradient-padding)),
+    calc(var(--border-gradient-padding) + var(--border-gradient-size)) calc(100% - var(--border-gradient-padding)),
+    calc(var(--border-gradient-padding) + var(--border-gradient-size)) calc(var(--border-gradient-padding) + var(--border-gradient-size)),
+    calc(100% - var(--border-gradient-size) - var(--border-gradient-padding)) calc(var(--border-gradient-padding) + var(--border-gradient-size)),
+    calc(100% - var(--border-gradient-size) - var(--border-gradient-padding)) calc(100% - var(--border-gradient-size) - var(--border-gradient-padding)),
+    calc(var(--border-gradient-padding) + var(--border-gradient-size)) calc(100% - var(--border-gradient-size) - var(--border-gradient-padding)),
+    calc(var(--border-gradient-padding) + var(--border-gradient-size)) calc(100% - var(--border-gradient-padding)),
+    calc(100% - var(--border-gradient-padding)) calc(100% - var(--border-gradient-padding)),
+    calc(100% - var(--border-gradient-padding)) var(--border-gradient-padding),
+    var(--border-gradient-padding) var(--border-gradient-padding)
+  ); */
+}
