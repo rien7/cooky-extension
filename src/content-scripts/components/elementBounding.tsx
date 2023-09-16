@@ -3,6 +3,7 @@ import { SendType } from '../../utils/sendType'
 import type { ParagraphDataType } from '../App'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
 import { generateParagraphId, sendMessage } from '../util/sendMessages'
+import { preventATagClick } from '../util/listenerFunctions'
 
 export default function ElementBounding(props: {
   element: Element
@@ -38,6 +39,7 @@ export default function ElementBounding(props: {
     // disable <a> tag
     const aTags = element.querySelectorAll('a')
     aTags.forEach((aTag) => {
+      aTag.addEventListener('click', preventATagClick)
       const href = aTag.getAttribute('href')
       if (href) {
         aTag.removeAttribute('href')

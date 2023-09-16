@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { Icon } from '@iconify/react'
 import type { ParagraphDataType } from '../App'
 import { SendType } from '../../utils/sendType'
 import { generateParagraphId, sendMessage } from '../util/sendMessages'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
+import { preventATagClick } from '../util/listenerFunctions'
 
 export default function ConfirmDot(props: {
   element: Element
@@ -68,6 +68,7 @@ export default function ConfirmDot(props: {
     // reset <a> tag
     const aTags = document.querySelectorAll('a')
     aTags.forEach((aTag) => {
+      aTag.removeEventListener('click', preventATagClick)
       const href = aTag.getAttribute('disabled-href')
       if (href) {
         aTag.setAttribute('href', href)
@@ -79,11 +80,7 @@ export default function ConfirmDot(props: {
   return (
     <>
       { fixed && <div className='group absolute -bottom-2 -right-2 h-6 w-6 cursor-pointer rounded-full bg-orange-400 blur-sm transition-all hover:-bottom-4 hover:-right-4 hover:z-50 hover:h-20 hover:w-20 hover:blur-md'
-        onClick={handleClick} >
-          {/* <Icon icon='tabler:triangle-inverted-filled'
-          className="absolute left-0 top-0 m-0 h-0 w-0 -rotate-90 text-white opacity-0 transition
-          group-hover:left-1/2 group-hover:top-1/2 group-hover:h-6 group-hover:w-6 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 group-hover:opacity-100"/> */}
-        </div>
+        onClick={handleClick} />
       }
     </>
   )
