@@ -1,3 +1,3 @@
-export function preventATagClick(e: MouseEvent) {
+export function preventDefault(e: MouseEvent) {
   e.preventDefault()
 }

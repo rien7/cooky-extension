@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 
-export default function useSelection(dom: HTMLElement | undefined) {
+export default function useSelection(fixed: boolean, dom: Element | undefined) {
   const [selections, setSelections] = useState<{ s: number; e: number; id: string }[]>([])
 
   function handleMouseUp() {
-    if (!dom)
+    if (!dom || !fixed)
       return
     const selectionObj: Selection | null = (window.getSelection && window.getSelection())
     if (!selectionObj)
@@ -154,7 +154,7 @@ export default function useSelection(dom: HTMLElement | undefined) {
     return () => {
       dom?.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [dom])
+  }, [dom, fixed])
 
   return selections
 }

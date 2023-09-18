@@ -3,7 +3,7 @@ import type { ParagraphDataType } from '../App'
 import { SendType } from '../../utils/sendType'
 import { generateParagraphId, sendMessage } from '../util/sendMessages'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
-import { preventATagClick } from '../util/listenerFunctions'
+import { preventDefault } from '../util/listenerFunctions'
 
 export default function ConfirmDot(props: {
   element: Element
@@ -68,7 +68,7 @@ export default function ConfirmDot(props: {
     // reset <a> tag
     const aTags = document.querySelectorAll('a')
     aTags.forEach((aTag) => {
-      aTag.removeEventListener('click', preventATagClick)
+      aTag.removeEventListener('click', preventDefault)
       const href = aTag.getAttribute('disabled-href')
       if (href) {
         aTag.setAttribute('href', href)

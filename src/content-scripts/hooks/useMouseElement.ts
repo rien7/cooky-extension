@@ -1,43 +1,32 @@
 import { useEffect, useState } from 'react'
-import useMouse from './useMouse'
+import type { CursorState } from './useMouse'
 
-export default function useMouseElement(fixed: boolean = false) {
+export default function useMouseElement(fixed: boolean, keyPress: boolean, position: CursorState | undefined) {
   const [element, setElement] = useState<Element | undefined>(undefined)
-  const position = useMouse()
-  const excludeTagName = ['', 'DIV', 'HTML', 'BODY']
+  const excludeTagName = ['', 'HTML', 'BODY']
+  const needMoreCheckTagName = ['DIV']
   const includeTagName = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT', 'TD']
   const inlineTagName = ['SPAN', 'CODE', 'B', 'I', 'EM', 'STRONG', 'A', '#text']
 
   useEffect(() => {
+    if (!fixed && !keyPress) {
+      setElement(undefined)
+      return
+    }
+
     if (fixed)
       return
     let element = document.elementFromPoint(position?.clientX ?? 0, position?.clientY ?? 0) || undefined
-    // if element has only one text child
-    // if (element?.tagName === 'DIV') {
-    //   const children = element?.children
-    //   let plainText = true
-    //   for (let i = 0; i < children?.length; i++) {
-    //     const child = children[i]
-    //     if (!inlineTagName.includes(child.tagName)) {
-    //       plainText = false
-    //       break
-    //     }
-    //   }
-    //   if (plainText) {
-    //     setElement(element)
-    //     return
-    //   }
-    // }
-    if (!element || element == null || excludeTagName.filter(it => it !== 'DIV').includes(element.tagName || '')) {
-      // setElement(undefined)
+
+    if (!element || excludeTagName.includes(element.tagName || ''))
       return
-    }
+
     while (!includeTagName.includes(element?.tagName || '')) {
-      if (element.tagName === 'DIV' && element.children.length === 0) {
+      if (needMoreCheckTagName.includes(element.tagName) && element.children.length === 0) {
         setElement(element)
         return
       }
-      if (inlineTagName.includes(element?.tagName || '') && element.parentElement?.tagName === 'DIV') {
+      if (inlineTagName.includes(element?.tagName || '') && element.parentElement && needMoreCheckTagName.includes(element.parentElement.tagName)) {
         element = element.parentElement
         setElement(element)
         return
@@ -47,10 +36,10 @@ export default function useMouseElement(fixed: boolean = false) {
       else
         break
     }
-    if (!element || element == null || excludeTagName.includes(element.tagName || '') || element.textContent?.trim() === '') {
-      // setElement(undefined)
+
+    if (!element || element == null || excludeTagName.includes(element.tagName || '') || element.textContent?.trim() === '')
       return
-    }
+
     setElement(element)
   }, [position])
 

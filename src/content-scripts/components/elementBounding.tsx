@@ -3,19 +3,18 @@ import { SendType } from '../../utils/sendType'
 import type { ParagraphDataType } from '../App'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
 import { generateParagraphId, sendMessage } from '../util/sendMessages'
-import { preventATagClick } from '../util/listenerFunctions'
+import { preventDefault } from '../util/listenerFunctions'
 
 export default function ElementBounding(props: {
   element: Element
   bounding: ElementBoundingType
   boundingRef: React.MutableRefObject<HTMLDivElement | null>
-  elementRef: React.MutableRefObject<HTMLElement | undefined>
   fixed: boolean
   setFixed: React.Dispatch<React.SetStateAction<boolean>>
   _paragraphData: React.MutableRefObject<ParagraphDataType[]>
   children: React.ReactNode[]
 }) {
-  const { element, bounding, boundingRef, elementRef, fixed, setFixed, _paragraphData } = props
+  const { element, bounding, boundingRef, fixed, setFixed, _paragraphData } = props
   const bodyBounding = document.body.getBoundingClientRect()
   const directTranslate = useRef(false)
   const isBlock = element.classList.contains('cooky-selection-paragraph')
@@ -34,12 +33,11 @@ export default function ElementBounding(props: {
     setFixed(true)
     if (!classList.contains('cooky-selecting-paragraph'))
       element.classList.add('cooky-selecting-paragraph')
-    elementRef.current = element as HTMLElement
 
     // disable <a> tag
     const aTags = element.querySelectorAll('a')
     aTags.forEach((aTag) => {
-      aTag.addEventListener('click', preventATagClick)
+      aTag.addEventListener('click', preventDefault)
       const href = aTag.getAttribute('href')
       if (href) {
         aTag.removeAttribute('href')
@@ -56,7 +54,7 @@ export default function ElementBounding(props: {
     setFixed(true)
     //  if (!classList.contains('cooky-selecting-paragraph'))
     //    element.classList.add('cooky-selecting-paragraph')
-    elementRef.current = element as HTMLElement
+    // elementRef.current = element as HTMLElement
     const paragraphData = _paragraphData.current
     const paragraphId = generateParagraphId(element, paragraphData)
     const pd: ParagraphDataType = {

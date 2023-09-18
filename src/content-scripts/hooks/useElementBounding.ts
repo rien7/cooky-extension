@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import useMouseElement from './useMouseElement'
 
 export interface ElementBoundingType {
   x: number
@@ -14,16 +13,18 @@ export interface ElementBoundingType {
   scrollY: number
 }
 
-export default function useElementBounding(fixed: boolean = false, _element?: HTMLElement) {
+export default function useElementBounding(fixed: boolean, keyPress: boolean, element: Element) {
   const [elementBounding, setElementBounding] = useState<ElementBoundingType | undefined>(undefined)
-  let element = useMouseElement()
-  if (_element)
-    element = _element
 
   useEffect(() => {
-    if (fixed && !_element)
+    if (!fixed && !keyPress) {
+      setElementBounding(undefined)
       return
-    const boundingClientRect = element?.getBoundingClientRect()
+    }
+    // if selecting, then don't update bounding
+    if (fixed)
+      return
+    const boundingClientRect = element.getBoundingClientRect()
     if (!boundingClientRect) {
       setElementBounding(undefined)
       return

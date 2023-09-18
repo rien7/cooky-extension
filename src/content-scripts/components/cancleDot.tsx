@@ -1,12 +1,11 @@
-import { preventATagClick } from '../util/listenerFunctions'
+import { preventDefault } from '../util/listenerFunctions'
 
 export default function CancleDot(props: {
   element: Element
-  elementRef: React.MutableRefObject<HTMLElement | undefined>
   setFixed: React.Dispatch<React.SetStateAction<boolean>>
   fixed: boolean
 }) {
-  const { element, elementRef, setFixed, fixed } = props
+  const { element, setFixed, fixed } = props
 
   function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation()
@@ -17,12 +16,11 @@ export default function CancleDot(props: {
       element.outerHTML = element.textContent || ''
     })
     setFixed(false)
-    elementRef.current = undefined
 
     // reset <a> tag
     const aTags = document.querySelectorAll('a')
     aTags.forEach((aTag) => {
-      aTag.removeEventListener('click', preventATagClick)
+      aTag.removeEventListener('click', preventDefault)
       const href = aTag.getAttribute('disabled-href')
       if (href) {
         aTag.setAttribute('href', href)

@@ -23,25 +23,28 @@ export interface ParagraphDataType {
   chatHistory: { role: 'user' | 'assistant'; text: string; timestamp: number }[]
 }
 
-function App() {
+export default function App() {
   const [fixed, setFixed] = useState(false)
-  const [showBlock, setShowBlock] = useState(false)
-  const [domChange, setDomChange] = useState(false)
 
   // recode pressed key in setting
   const keyPressSetting = useRef<ShortcutKey[]>([])
-  // recode element that mouse is on
-  const elementRef = useRef<HTMLElement | undefined>(undefined)
+  const keyPress = useKeyPress(keyPressSetting.current)
+
+  const [showBlock, setShowBlock] = useState(false)
+  const [domChange, setDomChange] = useState(false)
+
   // use to set bounding element pointer-events
-  const boundingRef = useRef<HTMLDivElement | null>(null)
+  const boundingDomRef = useRef<HTMLDivElement | null>(null)
 
   const paragraphData = useRef<ParagraphDataType[]>([])
 
   const position = useMouse()
-  const element = useMouseElement(fixed)
-  const bounding = useElementBounding(fixed, elementRef.current)
-  const keyPress = useKeyPress(keyPressSetting.current)
-  const selection = useSelection(elementRef.current)
+
+  // if key press and not fixed, get element that mouse is on
+  const element = useMouseElement(fixed, keyPress, position)
+
+  const bounding = useElementBounding(fixed, keyPress, element!)
+  const selection = useSelection(fixed, element)
 
   const elementChange = useElementChange(fixed, element, bounding
     ? {
@@ -68,59 +71,52 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (elementChange) {
-      // TODO: extract to recovert function
+    if (elementChange)
       setFixed(false)
-      elementRef.current = undefined
-    }
   }, [elementChange])
 
   useEffect(() => {
-    if (!fixed)
-      elementRef.current = undefined
-  }, [fixed])
-
-  useEffect(() => {
-    if (keyPress && !fixed)
-      setShowBlock(true)
-    else if (fixed)
-      setShowBlock(true)
-    else
+    if (!keyPress && !fixed)
       setShowBlock(false)
-  }, [keyPress, fixed, element])
+    else if (!element || !bounding)
+      setShowBlock(false)
+    else
+      setShowBlock(true)
+  }, [fixed, keyPress, element, bounding])
 
+  // when mouse is on bounding element, set bounding element pointer-events to none
+  // so that mouse event can pass through bounding element
+  // fixed ElementBounding z-index heighter than bounding element
   useEffect(() => {
     if (!fixed || !position || !bounding)
       return
     if (position.clientX > bounding.left && position.clientX < bounding.left + bounding.width && position.clientY > bounding.top && position.clientY < bounding.top + bounding.height) {
-      if (!boundingRef.current?.classList.contains('pointer-events-none'))
-        boundingRef.current?.classList.add('pointer-events-none')
+      if (!boundingDomRef.current?.classList.contains('pointer-events-none'))
+        boundingDomRef.current?.classList.add('pointer-events-none')
     }
     else {
-      if (boundingRef.current?.classList.contains('pointer-events-none'))
-        boundingRef.current?.classList.remove('pointer-events-none')
+      if (boundingDomRef.current?.classList.contains('pointer-events-none'))
+        boundingDomRef.current?.classList.remove('pointer-events-none')
     }
   }, [fixed, position])
 
   return (
     <>
-      { showBlock && bounding && element
-        && <ElementBounding element={element}
-                            bounding={bounding}
-                            boundingRef={boundingRef}
-                            elementRef={elementRef}
+      { showBlock
+        && <ElementBounding element={element!}
+                            bounding={bounding!}
+                            boundingRef={boundingDomRef}
                             fixed={fixed}
                             setFixed={setFixed}
                             _paragraphData={paragraphData} >
-              <ConfirmDot element={element}
-                          bounding={bounding}
+              <ConfirmDot element={element!}
+                          bounding={bounding!}
                           _paragraphData={paragraphData}
                           setShowBlock={setShowBlock}
                           setFixed={setFixed}
                           fixed={fixed}
                           selection={selection}/>
-              <CancleDot element={element}
-                         elementRef={elementRef}
+              <CancleDot element={element!}
                          setFixed={setFixed}
                          fixed={fixed}/>
            </ElementBounding>
@@ -128,5 +124,3 @@ function App() {
     </>
   )
 }
-
-export default App
