@@ -71,8 +71,11 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (elementChange)
+    if (elementChange) {
+      if (element?.classList.contains('cooky-selecting-paragraph'))
+        element.classList.remove('cooky-selecting-paragraph')
       setFixed(false)
+    }
   }, [elementChange])
 
   useEffect(() => {
