@@ -8,7 +8,7 @@ module.exports = {
     'plugin:tailwindcss/recommended',
     '@antfu/eslint-config',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs', '*.json'],
+  ignorePatterns: ['dist', '.eslintrc.cjs', '*.json', '.github/*'],
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {

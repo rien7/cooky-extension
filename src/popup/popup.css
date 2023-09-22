@@ -3,5 +3,13 @@
 @tailwind utilities;
 
 .title {
-  @apply my-2 text-lg font-medium;
+  @apply my-2 text-lg font-medium text-neutral-900 dark:text-neutral-100;
+}
+
+.input {
+  @apply w-full h-9 rounded-md border-2 border-neutral-300 transition dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:border-neutral-500 focus:outline-none focus:ring-0 text-neutral-900 dark:text-neutral-100
+}
+
+html:has(.dark) {
+  @apply bg-slate-950
 }
