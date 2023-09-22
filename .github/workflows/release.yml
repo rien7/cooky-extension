@@ -19,7 +19,7 @@ jobs:
 
       - name: Get version
         id: get_version
-        uses: battila7/actions-get-version@v2
+        uses: battila7/get-version-action@v2
 
       - name: Get tag message
         id: tag
@@ -62,7 +62,7 @@ jobs:
 
       - name: Get version
         id: get_version
-        uses: battila7/actions-get-version@v2
+        uses: battila7/get-version-action@v2
 
       - name: Install dependencies
         run: pnpm install
