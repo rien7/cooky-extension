@@ -1,8 +1,6 @@
 import { useRef } from 'react'
-import { SendType } from '../../utils/sendType'
 import type { ParagraphDataType } from '../App'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
-import { generateParagraphId, sendMessage } from '../util/sendMessages'
 import { preventDefault } from '../util/listenerFunctions'
 
 export default function ElementBounding(props: {
@@ -14,7 +12,7 @@ export default function ElementBounding(props: {
   _paragraphData: React.MutableRefObject<ParagraphDataType[]>
   children: React.ReactNode[]
 }) {
-  const { element, bounding, boundingRef, fixed, setFixed, _paragraphData } = props
+  const { element, bounding, boundingRef, fixed, setFixed } = props
   const bodyBounding = document.body.getBoundingClientRect()
   const directTranslate = useRef(false)
   const isBlock = element.classList.contains('cooky-selection-paragraph')
@@ -44,33 +42,6 @@ export default function ElementBounding(props: {
         aTag.setAttribute('disabled-href', href)
       }
     })
-  }
-
-  function handleSendMessageClick() {
-    directTranslate.current = true
-    const classList = element.classList
-    if (classList.contains('cooky-selection-paragraph'))
-      return
-    setFixed(true)
-    //  if (!classList.contains('cooky-selecting-paragraph'))
-    //    element.classList.add('cooky-selecting-paragraph')
-    // elementRef.current = element as HTMLElement
-    const paragraphData = _paragraphData.current
-    const paragraphId = generateParagraphId(element, paragraphData)
-    const pd: ParagraphDataType = {
-      id: paragraphId,
-      element: element as HTMLElement,
-      current: true,
-      position: bounding,
-      text: element.textContent || '',
-      selections: [],
-      selectionsTranslation: [],
-      chatHistory: [],
-    }
-    paragraphData.push(pd)
-    if (!classList.contains('cooky-selection-paragraph'))
-      element.classList.add('cooky-selection-paragraph', `paragraph-${paragraphId}`)
-    sendMessage(pd, setFixed, SendType.TRANSLATE_ONLY)
   }
 
   return (
