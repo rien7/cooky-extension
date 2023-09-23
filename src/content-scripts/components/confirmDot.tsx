@@ -79,9 +79,13 @@ export default function ConfirmDot(props: {
 
   return (
     <>
-      { fixed && <div className='group absolute -bottom-2 -right-2 h-6 w-6 cursor-pointer rounded-full bg-orange-400 blur-sm transition-all hover:-bottom-4 hover:-right-4 hover:z-50 hover:h-20 hover:w-20 hover:blur-md'
-        onClick={handleClick} />
-      }
+      { fixed && <>
+        <div className='absolute -bottom-2 -right-2 h-6 w-6 cursor-pointer rounded-full bg-orange-400 blur-sm transition-all hover:-bottom-8 hover:-right-8 hover:z-50 hover:h-20 hover:w-20 hover:blur-md'
+          onClick={handleClick} />
+        <div className='absolute right-0 top-0 h-4 w-4 overflow-hidden'>
+          <div className='absolute right-[3px] top-[3px] h-8 w-8 rounded-md border-2 border-orange-300'/>
+        </div>
+      </>}
     </>
   )
 }

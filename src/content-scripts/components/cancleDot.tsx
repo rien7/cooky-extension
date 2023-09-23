@@ -31,12 +31,13 @@ export default function CancleDot(props: {
 
   return (
     <>
-      { fixed && <div className='group absolute -left-2 -top-2 h-6 w-6 cursor-pointer rounded-full bg-red-400 blur-sm transition-all hover:-left-4 hover:-top-4 hover:z-50 hover:h-20 hover:w-20 hover:blur-md'
-        onClick={handleClick} >
-          {/* <Icon icon='material-symbols:close-rounded'
-          className="absolute left-0 top-0 m-0 h-0 w-0 text-white opacity-0 transition
-          group-hover:left-1/2 group-hover:top-1/2 group-hover:h-6 group-hover:w-6 group-hover:-translate-x-1/2 group-hover:-translate-y-1/2 group-hover:opacity-100"/> */}
-        </div> }
+      { fixed && <>
+          <div className='absolute -left-2 -top-2 h-6 w-6 cursor-pointer rounded-full bg-red-400 blur-sm transition-all hover:-left-8 hover:-top-8 hover:z-50 hover:h-20 hover:w-20 hover:blur-md'
+            onClick={handleClick} />
+          <div className='absolute bottom-0 left-0 h-4 w-4 overflow-hidden'>
+            <div className='absolute bottom-[3px] left-[3px] h-8 w-8 rounded-md border-2 border-red-300'/>
+          </div>
+        </> }
     </>
   )
 }
