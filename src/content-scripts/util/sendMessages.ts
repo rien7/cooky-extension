@@ -1,4 +1,3 @@
-import { Md5 } from 'ts-md5'
 import { OpenAi } from '../../utils/openai'
 import { SendType } from '../../utils/sendType'
 import type { ParagraphDataType } from '../App'
@@ -6,13 +5,12 @@ import type { ParagraphDataType } from '../App'
 export async function sendMessage(
   paragraphData: ParagraphDataType,
   setFixed: React.Dispatch<React.SetStateAction<boolean>>,
-  sendType: SendType = SendType.TRANSLATE_AND_EXPLAIN_MIXED,
+  sendType: SendType = SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY,
 ) {
   const element = paragraphData.element
   const selection = paragraphData.selections
   let buffer = ''
   let anotherBuffer = ''
-  let explainationCompleted = false
   if (selection && element.textContent) {
     if (selection.length === 0 && sendType !== SendType.EXPLAIN_ONLY)
       sendType = SendType.TRANSLATE_ONLY
@@ -31,7 +29,7 @@ export async function sendMessage(
       const stream = await OpenAi.SINGLETON.explain(element.textContent, selection)
       for await (const part of stream) {
         const data = part.choices[0]?.delta?.content || ''
-        if (data === '❖' || data === '\n') {
+        if (data === '\n') {
           buffer = ''
           continue
         }
@@ -44,38 +42,6 @@ export async function sendMessage(
             paragraphData.selectionsTranslation.push(result)
           else
             seleTran.text = result.text
-        }
-      }
-    }
-    // translate and explain mixed
-    else if (sendType === SendType.TRANSLATE_AND_EXPLAIN_MIXED) {
-      const stream = await OpenAi.SINGLETON.translateAndExplain(element.textContent, selection)
-      for await (const part of stream) {
-        const data = part.choices[0]?.delta?.content || ''
-        if (data === '❖') {
-          explainationCompleted = true
-          buffer = ''
-          continue
-        }
-        if (data === '\n') {
-          buffer = ''
-          continue
-        }
-        buffer += data
-        if (!explainationCompleted) {
-          const result = getSelectionTranslationFromBuffer(buffer, selection)
-          if (result) {
-            setSelectionTranslation(result.id, result.text)
-            const seleTran = paragraphData.selectionsTranslation.find(item => item.id === result.id)
-            if (!seleTran)
-              paragraphData.selectionsTranslation.push(result)
-            else
-              seleTran.text = result.text
-          }
-        }
-        else {
-          setTranslation(paragraphData.id, buffer)
-          paragraphData.textTranslation = buffer
         }
       }
     }
@@ -123,18 +89,6 @@ export async function sendMessage(
       element.classList.remove('cooky-selecting-paragraph')
     paragraphData.current = false
   }
-}
-
-export function generateParagraphId(element: Element, paragraphData: ParagraphDataType[]) {
-  let paragraphId = Md5.hashStr(element.textContent || '').padStart(6, '0').slice(0, 6).toUpperCase()
-  if (paragraphData.some(item => item.id === paragraphId)) {
-    const silbingElements = [element]
-    while (paragraphData.some(item => item.id === paragraphId)) {
-      silbingElements.push(silbingElements[silbingElements.length - 1]?.nextElementSibling as HTMLElement)
-      paragraphId = Md5.hashStr(silbingElements.map(element => element?.textContent).join('') || '').padStart(6, '0').slice(0, 6).toUpperCase()
-    }
-  }
-  return paragraphId
 }
 
 function setTranslation(id: string, text: string) {

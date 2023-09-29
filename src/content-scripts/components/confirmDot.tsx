@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import type { ParagraphDataType } from '../App'
 import { SendType } from '../../utils/sendType'
-import { generateParagraphId, sendMessage } from '../util/sendMessages'
+import { sendMessage } from '../util/sendMessages'
 import type { ElementBoundingType } from '../hooks/useElementBounding'
 import { preventDefault } from '../util/listenerFunctions'
 
@@ -15,23 +15,13 @@ export default function ConfirmDot(props: {
   selection: { s: number; e: number; id: string }[]
 }) {
   const { element, bounding, _paragraphData, setShowBlock, setFixed, fixed, selection } = props
-  const sendType = useRef<SendType>(SendType.DEFAULT)
-
-  useEffect(() => {
-    chrome.storage.local.get(['sendType'], (result) => {
-      sendType.current = result.sendType
-    })
-    chrome.storage.onChanged.addListener((changes) => {
-      if (changes.sendType)
-        sendType.current = changes.sendType.newValue
-    })
-  }, [])
+  const sendType = useRef<SendType>(SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY)
 
   function handleClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation()
     const paragraphData = _paragraphData.current
     // generate paragraph id
-    const paragraphId = generateParagraphId(element, paragraphData)
+    const paragraphId = Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase()
     let existedPd = paragraphData.find(pd => pd.id === paragraphId)
     if (existedPd) {
       existedPd.current = true

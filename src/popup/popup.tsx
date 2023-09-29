@@ -2,14 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import languages from '../utils/languages'
 import { ShortcutKey } from '../utils/shortcutKey'
-import { SendType } from '../utils/sendType'
 import '../utils/i18n'
 
 export default function Popup() {
   const [openAIApiKey, setOpenAIApiKey] = useState('')
   const [targetLanguageCode, setTargetLanguageCode] = useState(languages[0].code)
   const [shortcut, setShortcut] = useState<ShortcutKey[]>([])
-  const [sendType, setSendType] = useState<SendType>(SendType.DEFAULT)
   const [showKey, setShowKey] = useState(false)
   const [dark, setDark] = useState(false)
   const os = useMemo(() => getOS(), [])
@@ -27,10 +25,6 @@ export default function Popup() {
     chrome.storage.local.get(['shortcut'], (result) => {
       setShortcut(result.shortcut)
     })
-    chrome.storage.local.get(['sendType'], (result) => {
-      setSendType(result.sendType)
-    })
-    setDark(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       setDark(e.matches)
     })
@@ -47,13 +41,6 @@ export default function Popup() {
     setTargetLanguageCode(value)
     chrome.storage.local.set({ targetLanguageCode: value })
     i18n.changeLanguage(value)
-  }
-
-  function handleSendTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
-    const { value } = event.target
-    const sendType = Number.parseInt(value) as SendType
-    chrome.storage.local.set({ sendType })
-    setSendType(sendType)
   }
 
   function getOS() {
@@ -99,15 +86,6 @@ export default function Popup() {
                 <option key={language.code} value={language.code}>{language.name}</option>
               )
             })}
-          </select>
-        </Section>
-        <Section title={t('send type')}>
-          <select
-            className="input p-1"
-            value={sendType}
-            onChange={handleSendTypeChange}>
-              <option value={SendType.TRANSLATE_AND_EXPLAIN_MIXED}>{t('send type mixed')}</option>
-              <option value={SendType.TRANSLATE_AND_EXPLAIN_SEPARATELY}>{t('send type separate')}</option>
           </select>
         </Section>
         <Section title={t('trigger key')}>
