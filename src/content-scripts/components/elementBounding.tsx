@@ -48,6 +48,7 @@ export default function ElementBounding(props: {
     <>
     { !directTranslate.current
       && <div ref={boundingRef} className='border-gradient absolute transition-all duration-300'
+          onClick={handleHighlightClick}
           style={{
             left: bounding.left + bounding.scrollX - 10 - bodyBounding.left,
             top: bounding.top + bounding.scrollY - 10,
@@ -55,8 +56,6 @@ export default function ElementBounding(props: {
             height: bounding.height + 20,
           }}>
             <div className={`absolute z-50 rounded-lg ${pointer} overflow-hidden`}
-            // rounded-lg ${!fixed && !isBlock ? 'bg-orange-400/20' : 'bg-transparent'}
-            onClick={handleHighlightClick}
             style={{
               left: 0,
               top: 0,

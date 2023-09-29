@@ -5,11 +5,10 @@ import useElementBounding from './hooks/useElementBounding'
 import useMouseElement from './hooks/useMouseElement'
 import useSelection from './hooks/useSelection'
 import useKeyPress from './hooks/useKeyPress'
-import useMouse from './hooks/useMouse'
+import useMousePosition from './hooks/useMousePosition'
 import ConfirmDot from './components/confirmDot'
 import CancleDot from './components/cancleDot'
 import ElementBounding from './components/elementBounding'
-import useElementChange from './hooks/useElementChange'
 
 export interface ParagraphDataType {
   id: string
@@ -28,30 +27,22 @@ export default function App() {
 
   // recode pressed key in setting
   const keyPressSetting = useRef<ShortcutKey[]>([])
-  const keyPress = useKeyPress(keyPressSetting.current)
 
   const [showBlock, setShowBlock] = useState(false)
-  const [domChange, setDomChange] = useState(false)
 
   // use to set bounding element pointer-events
   const boundingDomRef = useRef<HTMLDivElement | null>(null)
-
   const paragraphData = useRef<ParagraphDataType[]>([])
+  const lastBounding = useRef<ElementBoundingType | undefined>(undefined)
 
-  const position = useMouse()
+  const keyPress = useKeyPress(keyPressSetting.current)
+  const position = useMousePosition(fixed || keyPress)
 
-  // if key press and not fixed, get element that mouse is on
-  const element = useMouseElement(fixed, keyPress, position)
+  const element = useMouseElement(keyPress, position, lastBounding.current !== undefined && fixed)
+  const bounding = useElementBounding(element)
+  lastBounding.current = bounding
 
-  const bounding = useElementBounding(fixed, keyPress, element!)
   const selection = useSelection(fixed, element)
-
-  const elementChange = useElementChange(fixed, element, bounding
-    ? {
-        clientX: bounding.left + bounding.width / 2,
-        clientY: bounding.top + bounding.height / 2,
-      }
-    : undefined, domChange, setDomChange)
 
   useEffect(() => {
     chrome.storage.local.get(['shortcut'], (result) => {
@@ -61,30 +52,15 @@ export default function App() {
       if (changes.shortcut)
         keyPressSetting.current = changes.shortcut.newValue
     })
-    const mutationObserver = new MutationObserver(() => {
-      setDomChange(true)
-    })
-    mutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-    })
   }, [])
 
   useEffect(() => {
-    if (elementChange) {
-      if (element?.classList.contains('cooky-selecting-paragraph'))
-        element.classList.remove('cooky-selecting-paragraph')
-      setFixed(false)
-    }
-  }, [elementChange])
-
-  useEffect(() => {
-    if (!keyPress && !fixed)
-      setShowBlock(false)
-    else if (!element || !bounding)
-      setShowBlock(false)
-    else
+    if (fixed)
       setShowBlock(true)
+    else if (keyPress && bounding)
+      setShowBlock(true)
+    else
+      setShowBlock(false)
   }, [fixed, keyPress, element, bounding])
 
   // when mouse is on bounding element, set bounding element pointer-events to none
@@ -93,7 +69,7 @@ export default function App() {
   useEffect(() => {
     if (!fixed || !position || !bounding)
       return
-    if (position.clientX > bounding.left && position.clientX < bounding.left + bounding.width && position.clientY > bounding.top && position.clientY < bounding.top + bounding.height) {
+    if (position.clientX > bounding.left + 5 && position.clientX < bounding.left - 5 + bounding.width && position.clientY > bounding.top + 5 && position.clientY < bounding.top - 5 + bounding.height) {
       if (!boundingDomRef.current?.classList.contains('pointer-events-none'))
         boundingDomRef.current?.classList.add('pointer-events-none')
     }

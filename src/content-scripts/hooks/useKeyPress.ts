@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 
+/**
+ * Return if the keys are all pressed in order
+ * @param codes The key codes to be pressed
+ * @returns keyPress
+ */
 export default function useKeyPress(codes: string[]) {
   const [keyPress, setKeyPress] = useState(false)
   const [keys, setKeys] = useState<string[]>([])

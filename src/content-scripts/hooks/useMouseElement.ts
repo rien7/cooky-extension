@@ -1,67 +1,53 @@
 import { useEffect, useState } from 'react'
-import type { CursorState } from './useMouse'
+import type { CursorState } from './useMousePosition'
 
-export default function useMouseElement(fixed: boolean, keyPress: boolean, position: CursorState | undefined) {
+export default function useMouseElement(keyPress: boolean, position: CursorState | undefined, inBounding: boolean) {
   const [element, setElement] = useState<Element | undefined>(undefined)
-  const excludeTagName = ['', 'HTML', 'BODY']
+
+  const rootTagName = ['', 'HTML', 'BODY']
   const needMoreCheckTagName = ['DIV']
   const notBeChildTagName = ['PRE', 'BUTTON']
   const includeTagName = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'LI', 'DD', 'DT', 'TD']
   const inlineTagName = ['SPAN', 'CODE', 'B', 'I', 'EM', 'STRONG', 'A', '#text']
 
   useEffect(() => {
-    if (!fixed && !keyPress) {
+    if (inBounding)
+      return
+    if (!keyPress || !position) {
       setElement(undefined)
       return
     }
 
-    if (fixed)
-      return
-    let element = document.elementFromPoint(position?.clientX ?? 0, position?.clientY ?? 0) || undefined
+    let element = document.elementFromPoint(position.clientX, position.clientY) || undefined
 
-    if (!element || excludeTagName.includes(element.tagName || '') || element.textContent?.trim() === '')
+    if (!element || rootTagName.includes(element.tagName) || element.textContent?.trim() === '')
       return
 
     let tobeSetElement: Element | undefined
-    while (!includeTagName.includes(element?.tagName || '')) {
-      if (needMoreCheckTagName.includes(element.tagName)) {
-        if (element.children.length === 0) {
-          tobeSetElement = element
-          break
-        }
-        else {
-          let canSet = true
-          const children = element.children
-          for (let i = 0; i < children.length; i++) {
-            if (!inlineTagName.includes(children[i].tagName)) {
-              canSet = false
-              break
-            }
-          }
-          if (canSet) {
-            tobeSetElement = element
-            break
-          }
-        }
-      }
-      if (inlineTagName.includes(element?.tagName || '') && element.parentElement && needMoreCheckTagName.includes(element.parentElement.tagName)) {
-        element = element.parentElement
+    while (!includeTagName.includes(element.tagName)) {
+      // if tagName is div and has no child or all child is inline element, set this element
+      if (needMoreCheckTagName.includes(element.tagName)
+      && (element.children.length === 0
+        || !Array.from(element.children).some(c => !inlineTagName.includes(c.tagName)))) {
         tobeSetElement = element
         break
       }
-      if (element.parentElement)
-        element = element.parentElement
-      else
+      if (!element.parentElement)
         break
+      if (inlineTagName.includes(element.tagName) && needMoreCheckTagName.includes(element.parentElement.tagName)) {
+        tobeSetElement = element.parentElement
+        break
+      }
+      element = element.parentElement
     }
 
     if (!tobeSetElement
-      && (!element || element == null || excludeTagName.includes(element.tagName || '') || element.textContent?.trim() === ''))
+      && (!element || element == null || rootTagName.includes(element.tagName || '') || element.textContent?.trim() === ''))
       return
 
     if (tobeSetElement) {
       let checkElement: Element | undefined = tobeSetElement
-      while (!excludeTagName.includes(checkElement?.tagName || '')) {
+      while (!rootTagName.includes(checkElement?.tagName || '')) {
         if (notBeChildTagName.includes(checkElement?.tagName || '')) {
           tobeSetElement = undefined
           return
@@ -71,7 +57,7 @@ export default function useMouseElement(fixed: boolean, keyPress: boolean, posit
     }
 
     setElement(tobeSetElement || element)
-  }, [position])
+  }, [inBounding, keyPress, position])
 
   return element
 }

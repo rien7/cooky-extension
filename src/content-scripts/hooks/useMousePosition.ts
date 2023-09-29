@@ -9,7 +9,14 @@ export interface CursorState {
   pageY: number
 }
 
-export default function useMouse() {
+/**
+ * Return the position of the mouse when flag is true
+ *
+ * position will be `undefined` when flag is `false`
+ * @param flag add/remove event listener
+ * @returns position
+ */
+export default function useMousePosition(flag: boolean) {
   const [position, setPosition] = useState<CursorState | undefined>(undefined)
   function handleMouseMove(event: MouseEvent) {
     const { screenX, screenY, clientX, clientY, pageX, pageY } = event
@@ -17,11 +24,14 @@ export default function useMouse() {
   }
 
   useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove)
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
+    if (flag) {
+      document.addEventListener('mousemove', handleMouseMove)
     }
-  }, [])
+    else {
+      document.removeEventListener('mousemove', handleMouseMove)
+      setPosition(undefined)
+    }
+  }, [flag])
 
   return position
 }
